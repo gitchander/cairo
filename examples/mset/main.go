@@ -1,23 +1,17 @@
 package main
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/gitchander/cairo"
-	"github.com/gitchander/cairo/color"
+	cairo_color "github.com/gitchander/cairo/color"
 )
 
 func main() {
-	if err := ExampleMSet(); err != nil {
-		fmt.Println(err.Error())
-	}
-}
-
-func ExampleMSet() error {
 
 	surface, err := cairo.NewSurface(cairo.FORMAT_ARGB32, 512, 512)
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
 	defer surface.Destroy()
 
@@ -30,36 +24,32 @@ func ExampleMSet() error {
 	n := surface.GetDataLength()
 	bs := make([]byte, n)
 
-	//color.SurfaceFillRGB(surface, color.NewRGB(1, 1, 1))
-
 	if err = surface.GetData(bs); err != nil {
-		return err
+		log.Fatal(err)
 	}
 
-	renderMSet(bs, width, height, stride, color.NewRGB(0, 0, 0))
+	renderMSet(bs, width, height, stride, cairo_color.NewRGB(0, 0, 0))
 
 	if err = surface.SetData(bs); err != nil {
-		return err
+		log.Fatal(err)
 	}
 
 	if err = surface.WriteToPNG("fractal.png"); err != nil {
-		return err
+		log.Fatal(err)
 	}
-
-	return nil
 }
 
-func renderMSet(bs []byte, width, height, stride int, c color.RGB) {
+func renderMSet(bs []byte, width, height, stride int, c cairo_color.RGB) {
 
 	var (
 		dx = 4.0 / float64(width)
 		dy = 4.0 / float64(height)
 	)
 
-	var clBackground, clForeground, clResult color.RGBA
+	var clBackground, clForeground, clResult cairo_color.RGBA
 	cR, cG, cB := c.GetRGB()
 
-	coder := color.NewCoderBGRA32()
+	coder := cairo_color.NewCoderBGRA32()
 
 	n := 200
 
@@ -70,11 +60,11 @@ func renderMSet(bs []byte, width, height, stride int, c color.RGB) {
 
 			cA := calcAlphaSubpixel3x3(x, y, dx, dy, n)
 
-			clForeground = color.NewRGBA(cR, cG, cB, cA)
+			clForeground = cairo_color.NewRGBA(cR, cG, cB, cA)
 
 			i := pX * 4
 			clBackground, _ = coder.Decode(bs[i:])
-			clResult = color.Over(clForeground, clBackground)
+			clResult = cairo_color.Over(clForeground, clBackground)
 			coder.Encode(bs[i:], clResult)
 
 			x += dx

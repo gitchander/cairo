@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"image/color"
 	"os"
@@ -19,7 +20,7 @@ type Size struct {
 
 func HilbertCurve(c *cairo.Canvas, n int, size Size) error {
 
-	s, err := hilbert.New(n)
+	s, err := hilbert.NewHilbert(n)
 	if err != nil {
 		return err
 	}
@@ -82,7 +83,7 @@ func drawDoubleCurve(c *cairo.Canvas, n int, size Size) error {
 	return nil
 }
 
-func makeHilbertPNG(fileName string, n int, size Size) error {
+func makeHilbertPNG(fileName string, n int, size Size, double bool) error {
 
 	surface, err := cairo.NewSurface(cairo.FORMAT_ARGB32, size.Width, size.Height)
 	if err != nil {
@@ -98,8 +99,11 @@ func makeHilbertPNG(fileName string, n int, size Size) error {
 
 	imutil.CanvasFillColor(canvas, color.White)
 
-	//err = drawCurve(canvas, n, size)
-	err = drawDoubleCurve(canvas, n, size)
+	if double {
+		err = drawDoubleCurve(canvas, n, size)
+	} else {
+		err = drawCurve(canvas, n, size)
+	}
 	if err != nil {
 		return err
 	}
@@ -127,7 +131,7 @@ func makeDir(dir string) error {
 	return nil
 }
 
-func makeFiles() error {
+func makeFiles(double bool) error {
 
 	dir := "./curves"
 	size := Size{512, 512}
@@ -138,8 +142,8 @@ func makeFiles() error {
 
 	p := 2
 	for i := 0; i < 9; i++ {
-		fileName := filepath.Join(dir, fmt.Sprintf("hilbert_curve_%d.png", p))
-		if err := makeHilbertPNG(fileName, p, size); err != nil {
+		fileName := filepath.Join(dir, fmt.Sprintf("hilbert_curve_%04d.png", p))
+		if err := makeHilbertPNG(fileName, p, size, double); err != nil {
 			return err
 		}
 		p *= 2
@@ -149,7 +153,9 @@ func makeFiles() error {
 }
 
 func main() {
-	if err := makeFiles(); err != nil {
+	double := flag.Bool("double", false, "draw double curves")
+	flag.Parse()
+	if err := makeFiles(*double); err != nil {
 		fmt.Println(err.Error())
 	}
 }
