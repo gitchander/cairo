@@ -152,21 +152,11 @@ func canvasSize(canvas *cairo.Canvas) (width, height int) {
 
 func fillAndStroke(canvas *cairo.Canvas, fillColor, strokeColor uint32) {
 
-	setColor(canvas, fillColor)
+	setColorUint32(canvas, fillColor)
 	canvas.FillPreserve()
 
-	setColor(canvas, strokeColor)
+	setColorUint32(canvas, strokeColor)
 	canvas.Stroke()
-}
-
-func setColor(canvas *cairo.Canvas, c uint32) {
-	const coef = 1. / 255
-	var (
-		b = float64(c&0xFF) * coef
-		g = float64((c>>8)&0xFF) * coef
-		r = float64((c>>16)&0xFF) * coef
-	)
-	canvas.SetSourceRGB(r, g, b)
 }
 
 func pathForOnePart(canvas *cairo.Canvas, a float64) {
