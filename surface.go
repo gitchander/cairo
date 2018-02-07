@@ -70,6 +70,17 @@ func NewSurfaceNative(ptr uintptr) (*Surface, error) {
 	return newSurface(reference)
 }
 
+func CreateSurfaceForData(data []byte, format Format, width, height, stride int) (*Surface, error) {
+	surface_n := C.cairo_image_surface_create_for_data(
+		(*C.uchar)(&data[0]),
+		C.cairo_format_t(format),
+		C.int(width),
+		C.int(height),
+		C.int(stride),
+	)
+	return newSurface(surface_n)
+}
+
 func (s *Surface) Native() uintptr {
 	return uintptr(unsafe.Pointer(s.surface_n))
 }
