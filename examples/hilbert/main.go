@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"image"
 	"image/color"
 	"os"
 	"path/filepath"
@@ -14,11 +15,7 @@ import (
 	"github.com/gitchander/cairo/imutil"
 )
 
-type Size struct {
-	Width, Height int
-}
-
-func HilbertCurve(c *cairo.Canvas, n int, size Size) error {
+func HilbertCurve(c *cairo.Canvas, n int, size image.Point) error {
 
 	s, err := hilbert.NewHilbert(n)
 	if err != nil {
@@ -26,8 +23,8 @@ func HilbertCurve(c *cairo.Canvas, n int, size Size) error {
 	}
 
 	var (
-		dX = float64(size.Width) / float64(s.N)
-		dY = float64(size.Height) / float64(s.N)
+		dX = float64(size.X) / float64(s.N)
+		dY = float64(size.Y) / float64(s.N)
 	)
 
 	c.SetLineWidth(0.2 * ((dX + dY) / 2))
@@ -58,7 +55,7 @@ func HilbertCurve(c *cairo.Canvas, n int, size Size) error {
 	return nil
 }
 
-func drawCurve(c *cairo.Canvas, n int, size Size) error {
+func drawCurve(c *cairo.Canvas, n int, size image.Point) error {
 
 	c.SetSourceRGB(0, 0, 0)
 	if err := HilbertCurve(c, n, size); err != nil {
@@ -68,7 +65,7 @@ func drawCurve(c *cairo.Canvas, n int, size Size) error {
 	return nil
 }
 
-func drawDoubleCurve(c *cairo.Canvas, n int, size Size) error {
+func drawDoubleCurve(c *cairo.Canvas, n int, size image.Point) error {
 
 	c.SetSourceRGB(0.2, 0, 0)
 	if err := HilbertCurve(c, n, size); err != nil {
@@ -83,9 +80,9 @@ func drawDoubleCurve(c *cairo.Canvas, n int, size Size) error {
 	return nil
 }
 
-func makeHilbertPNG(fileName string, n int, size Size, double bool) error {
+func makeHilbertPNG(fileName string, n int, size image.Point, double bool) error {
 
-	surface, err := cairo.NewSurface(cairo.FORMAT_ARGB32, size.Width, size.Height)
+	surface, err := cairo.NewSurface(cairo.FORMAT_ARGB32, size.X, size.Y)
 	if err != nil {
 		return err
 	}
@@ -134,7 +131,7 @@ func makeDir(dir string) error {
 func makeFiles(double bool) error {
 
 	dir := "./curves"
-	size := Size{512, 512}
+	size := image.Point{X: 512, Y: 512}
 
 	if err := makeDir(dir); err != nil {
 		return err

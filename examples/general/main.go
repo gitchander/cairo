@@ -13,10 +13,10 @@ import (
 )
 
 const (
-	textureDefiance1     = "./images/defiance1.png"
-	textureDefiance2     = "./images/defiance2.png"
-	textureChippedBricks = "./images/chipped-bricks.png"
-	textureCircleBlue    = "./images/circle-blue.png"
+	textureDefiance1     = "images/defiance1.png"
+	textureDefiance2     = "images/defiance2.png"
+	textureChippedBricks = "images/chipped-bricks.png"
+	textureCircleBlue    = "images/circle-blue.png"
 )
 
 func DegToRad(deg float64) float64 {
@@ -630,7 +630,7 @@ func main() {
 
 	var (
 		size = Size{256, 256}
-		dir  = "./result"
+		dir  = "result"
 	)
 
 	if err := makeDir(dir); err != nil {

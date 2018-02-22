@@ -1,6 +1,7 @@
 package main
 
 import (
+	"image"
 	"log"
 	"math"
 
@@ -8,6 +9,8 @@ import (
 )
 
 // Splitting equilateral triangle into 5 equal parts
+
+// https://math.stackexchange.com/questions/8288/splitting-equilateral-triangle-into-5-equal-parts
 
 const (
 	sqrt3 = 1.7320508075688772
@@ -17,13 +20,13 @@ const (
 	sqrt3div6 = sqrt3 / 6
 )
 
-type Pointf struct {
+type Point2f struct {
 	X, Y float64
 }
 
 func main() {
-
-	surface, err := cairo.NewSurface(cairo.FORMAT_ARGB32, 800, 800)
+	size := image.Point{X: 512, Y: 512}
+	surface, err := cairo.NewSurface(cairo.FORMAT_ARGB32, size.X, size.Y)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -35,7 +38,7 @@ func main() {
 	}
 	defer canvas.Destroy()
 
-	draw(canvas)
+	draw(canvas, size)
 
 	err = surface.WriteToPNG("trion5.png")
 	if err != nil {
@@ -60,21 +63,19 @@ var palettes = [][]uint32{
 	},
 }
 
-func draw(canvas *cairo.Canvas) {
+func draw(canvas *cairo.Canvas, size image.Point) {
 
-	var width, height = canvasSize(canvas)
+	radius := float64(minInt(size.X, size.Y)) * 0.5
 
-	radius := float64(min(width, height)) * 0.5
-
-	var center = Pointf{
-		X: float64(width) * 0.5,
-		Y: float64(height)*0.5 + radius*(sqrt3/2-sqrt3/6)*0.5,
+	var center = Point2f{
+		X: float64(size.X) * 0.5,
+		Y: float64(size.Y)*0.5 + radius*(sqrt3/2-sqrt3/6)*0.5,
 	}
 
 	drawTriangleParts(canvas, center, radius, 0)
 }
 
-func drawTriangleParts(canvas *cairo.Canvas, center Pointf, radius float64, angle float64) {
+func drawTriangleParts(canvas *cairo.Canvas, center Point2f, radius float64, angle float64) {
 
 	colors := palettes[1]
 	var strokeColor uint32 = 0
@@ -214,7 +215,7 @@ func pathForOnePart(canvas *cairo.Canvas, a float64) {
 	canvas.ClosePath()
 }
 
-func min(x, y int) int {
+func minInt(x, y int) int {
 	if x < y {
 		return x
 	}

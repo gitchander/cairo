@@ -6,61 +6,25 @@ import (
 	"github.com/gitchander/cairo"
 )
 
-func CanvasFillColor(canvas *cairo.Canvas, cl color.Color) {
-
-	surface := canvas.GetTarget()
-	if surface == nil {
-		return
-	}
-
-	r, g, b, a := cl.RGBA()
-
-	const max = 65535
-
+func CanvasSetColor(canvas *cairo.Canvas, cr color.Color) {
+	r, g, b, a := cr.RGBA()
+	const max = 0xffff
 	var (
 		R = float64(r) / max
 		G = float64(g) / max
 		B = float64(b) / max
-		A = float64(a) / max
 	)
-
-	canvas.Save()
-
 	if a == max {
 		canvas.SetSourceRGB(R, G, B)
 	} else {
+		var A = float64(a) / max
 		canvas.SetSourceRGBA(R, G, B, A)
-		canvas.SetOperator(cairo.OPERATOR_SOURCE)
 	}
-
-	canvas.Paint()
-	canvas.Restore()
 }
 
-/*
-func CanvasFillRGBA(canvas *cairo.Canvas, color RGBA) {
-
-	surface := canvas.GetTarget()
-	if surface == nil {
-		return
-	}
-
-	r, g, b, a := color.GetRGBA()
-
+func CanvasFillColor(canvas *cairo.Canvas, cr color.Color) {
 	canvas.Save()
-	canvas.SetSourceRGBA(r, g, b, a)
-	canvas.SetOperator(cairo.OPERATOR_SOURCE)
+	CanvasSetColor(canvas, cr)
 	canvas.Paint()
 	canvas.Restore()
 }
-
-func SurfaceFillRGB(surface *cairo.Surface, c RGB) {
-
-	canvas, _ := cairo.NewCanvas(surface)
-	defer canvas.Destroy()
-
-	r, g, b := c.GetRGB()
-	canvas.SetSourceRGB(r, g, b)
-	canvas.Paint()
-}
-*/

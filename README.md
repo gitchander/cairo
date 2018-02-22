@@ -1,10 +1,16 @@
 # cairo
-cairo package for golang
+cairo binding for golang
+
+[Cairo](https://www.cairographics.org) is a 2D graphics library.
 
 ## Install
 
+### Install Cairo
 ```shell
 $ sudo apt-get install libcairo2-dev
 ```
 
-go get github.com/gitchander/cairo
+### Load this package
+```shell
+$ go get github.com/gitchander/cairo
+```
