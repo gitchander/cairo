@@ -1,7 +1,8 @@
 package colorf
 
-import (
-	"math"
+const (
+	maxUint8  = 0xff
+	maxUint16 = 0xffff
 )
 
 func norm(channel float64) float64 {
@@ -17,20 +18,10 @@ func norm(channel float64) float64 {
 	return channel
 }
 
-func round(x float64) float64 {
-	return math.Floor(x + 0.5)
-}
-
 // Lerp - Linear interpolation
 // t= [0, 1]
 // (t == 0) => v0
 // (t == 1) => v1
 func lerp(v0, v1 float64, t float64) float64 {
 	return (1.0-t)*v0 + t*v1
-}
-
-const channelMax = 0xffff
-
-func channelToMax(x float64) uint32 {
-	return uint32(round(x * channelMax))
 }

@@ -9,10 +9,10 @@ type RGBA struct {
 var _ color.Color = RGBA{}
 
 func (c RGBA) RGBA() (r, g, b, a uint32) {
-	r = channelToMax(c.R)
-	g = channelToMax(c.G)
-	b = channelToMax(c.B)
-	a = channelToMax(c.A)
+	r = uint32(c.R * maxUint16)
+	g = uint32(c.G * maxUint16)
+	b = uint32(c.B * maxUint16)
+	a = uint32(c.A * maxUint16)
 	return
 }
 
@@ -45,9 +45,9 @@ func rgbaModel(c color.Color) color.Color {
 	}
 	r, g, b, a := c.RGBA()
 	return RGBA{
-		R: float64(r) / channelMax,
-		G: float64(g) / channelMax,
-		B: float64(b) / channelMax,
-		A: float64(a) / channelMax,
+		R: float64(r) / maxUint16,
+		G: float64(g) / maxUint16,
+		B: float64(b) / maxUint16,
+		A: float64(a) / maxUint16,
 	}
 }

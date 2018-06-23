@@ -1,4 +1,4 @@
-package main
+package pointf
 
 import (
 	"fmt"
@@ -48,15 +48,15 @@ func (p Point2f) String() string {
 	return fmt.Sprintf("(%.12f, %.12f)", p.X, p.Y)
 }
 
-func PolarToPoint2f(angle, radius float64) Point2f {
-	sin, cos := math.Sincos(angle)
-	return Point2f{X: cos, Y: sin}.MulScalar(radius)
-}
-
 func Distance(a, b Point2f) float64 {
 	var (
 		dx = a.X - b.X
 		dy = a.Y - b.Y
 	)
 	return math.Sqrt(dx*dx + dy*dy)
+}
+
+func PolarToDecart(radius, angle float64) Point2f {
+	sin, cos := math.Sincos(angle)
+	return Point2f{X: cos, Y: sin}.MulScalar(radius)
 }

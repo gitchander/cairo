@@ -2,53 +2,52 @@ package colorf
 
 import (
 	"errors"
-)
-
-const (
-	encodeFactor = 255.0
-	decodeFactor = 1.0 / encodeFactor
+	"image/color"
 )
 
 type Coder interface {
 	Size() int
-	Encode(bs []byte, c RGBA) (err error)
-	Decode(bs []byte) (c RGBA, err error)
+	Encode(bs []byte, c color.Color) error
+	Decode(bs []byte) (color.Color, error)
 }
 
 var CoderBGRA32 = coderBGRA32{}
 
 type coderBGRA32 struct{}
 
+var _ Coder = coderBGRA32{}
+
 // Encode Size
 func (coderBGRA32) Size() int {
 	return 4
 }
 
-func (coderBGRA32) Encode(bs []byte, c RGBA) error {
+func (coderBGRA32) Encode(bs []byte, c color.Color) error {
 
 	if len(bs) < CoderBGRA32.Size() {
-		return errors.New("ColorRGBA.Encode(): wrong data size")
+		return errors.New("Insufficient data len")
 	}
 
-	bs[0] = byte(round(c.B * encodeFactor))
-	bs[1] = byte(round(c.G * encodeFactor))
-	bs[2] = byte(round(c.R * encodeFactor))
-	bs[3] = byte(round(c.A * encodeFactor))
+	v := color.RGBAModel.Convert(c).(color.RGBA)
+
+	bs[0] = v.B
+	bs[1] = v.G
+	bs[2] = v.R
+	bs[3] = v.A
 
 	return nil
 }
 
-func (coderBGRA32) Decode(bs []byte) (c RGBA, err error) {
+func (coderBGRA32) Decode(bs []byte) (color.Color, error) {
 
 	if len(bs) < CoderBGRA32.Size() {
-		err = errors.New("ColorRGBA.Decode(): wrong data size")
-		return
+		return nil, errors.New("Insufficient data len")
 	}
 
-	return RGBA{
-		B: float64(bs[0]) * decodeFactor,
-		G: float64(bs[1]) * decodeFactor,
-		R: float64(bs[2]) * decodeFactor,
-		A: float64(bs[3]) * decodeFactor,
+	return color.RGBA{
+		B: bs[0],
+		G: bs[1],
+		R: bs[2],
+		A: bs[3],
 	}, nil
 }

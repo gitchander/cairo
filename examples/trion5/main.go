@@ -2,6 +2,7 @@ package main
 
 import (
 	"image"
+	"image/color"
 	"log"
 	"math"
 
@@ -25,6 +26,7 @@ type Point2f struct {
 }
 
 func main() {
+
 	size := image.Point{X: 512, Y: 512}
 	surface, err := cairo.NewSurface(cairo.FORMAT_ARGB32, size.X, size.Y)
 	if err != nil {
@@ -46,23 +48,6 @@ func main() {
 	}
 }
 
-var palettes = [][]uint32{
-	[]uint32{
-		0x588C7E,
-		0xF2E394,
-		0xD96459,
-		0xF2AE72,
-		0x8C4646,
-	},
-	[]uint32{
-		0x9ed670,
-		0x4d7358,
-		0xd64d4d,
-		0xe8d174,
-		0xe39e54,
-	},
-}
-
 func draw(canvas *cairo.Canvas, size image.Point) {
 
 	radius := float64(minInt(size.X, size.Y)) * 0.5
@@ -77,8 +62,7 @@ func draw(canvas *cairo.Canvas, size image.Point) {
 
 func drawTriangleParts(canvas *cairo.Canvas, center Point2f, radius float64, angle float64) {
 
-	colors := palettes[1]
-	var strokeColor uint32 = 0
+	var strokeColor = color.Black
 
 	side := radius * sqrt3
 	a := side / 5
@@ -105,7 +89,7 @@ func drawTriangleParts(canvas *cairo.Canvas, center Point2f, radius float64, ang
 		canvas.Translate(-a*2.5, -a*sqrt3*0.75)
 
 		pathForOnePart(canvas, a)
-		fillAndStroke(canvas, colors[0], strokeColor)
+		fillAndStroke(canvas, ColorIndex(0), strokeColor)
 	}
 
 	if parts[1] {
@@ -114,7 +98,7 @@ func drawTriangleParts(canvas *cairo.Canvas, center Point2f, radius float64, ang
 		canvas.Scale(-1, 1)
 
 		pathForOnePart(canvas, a)
-		fillAndStroke(canvas, colors[1], strokeColor)
+		fillAndStroke(canvas, ColorIndex(1), strokeColor)
 	}
 
 	if parts[2] {
@@ -122,7 +106,7 @@ func drawTriangleParts(canvas *cairo.Canvas, center Point2f, radius float64, ang
 		canvas.Translate(-a*2.0, -a*sqrt3div4)
 
 		pathForOnePart(canvas, a)
-		fillAndStroke(canvas, colors[2], strokeColor)
+		fillAndStroke(canvas, ColorIndex(2), strokeColor)
 	}
 
 	if parts[3] {
@@ -131,7 +115,7 @@ func drawTriangleParts(canvas *cairo.Canvas, center Point2f, radius float64, ang
 		canvas.Rotate(math.Pi * 4 / 3)
 
 		pathForOnePart(canvas, a)
-		fillAndStroke(canvas, colors[3], strokeColor)
+		fillAndStroke(canvas, ColorIndex(3), strokeColor)
 	}
 
 	if parts[4] {
@@ -140,7 +124,7 @@ func drawTriangleParts(canvas *cairo.Canvas, center Point2f, radius float64, ang
 		canvas.Rotate(math.Pi * 2 / 3)
 
 		pathForOnePart(canvas, a)
-		fillAndStroke(canvas, colors[4], strokeColor)
+		fillAndStroke(canvas, ColorIndex(4), strokeColor)
 	}
 }
 
@@ -151,12 +135,12 @@ func canvasSize(canvas *cairo.Canvas) (width, height int) {
 	return
 }
 
-func fillAndStroke(canvas *cairo.Canvas, fillColor, strokeColor uint32) {
+func fillAndStroke(canvas *cairo.Canvas, fillColor, strokeColor color.Color) {
 
-	setColorUint32(canvas, fillColor)
+	canvasSetColor(canvas, fillColor)
 	canvas.FillPreserve()
 
-	setColorUint32(canvas, strokeColor)
+	canvasSetColor(canvas, strokeColor)
 	canvas.Stroke()
 }
 

@@ -2,8 +2,9 @@ package main
 
 import (
 	"errors"
-	"fmt"
+	"image"
 	"image/color"
+	"log"
 	"math"
 	"os"
 	"path/filepath"
@@ -27,22 +28,18 @@ func RadToDeg(rad float64) float64 {
 	return rad * (180.0 / math.Pi)
 }
 
-type Size struct {
-	Width, Height int
-}
-
 type Example struct {
 	SampleFunc func(c *cairo.Canvas)
 	Dir        string
 	FileName   string
-	Size       Size
+	Size       image.Point
 }
 
 func (e *Example) Execute() error {
 
 	fileName := filepath.Join(e.Dir, e.FileName)
 
-	surface, err := cairo.NewSurface(cairo.FORMAT_ARGB32, e.Size.Width, e.Size.Height)
+	surface, err := cairo.NewSurface(cairo.FORMAT_ARGB32, e.Size.X, e.Size.Y)
 	if err != nil {
 		return err
 	}
@@ -66,7 +63,6 @@ func (e *Example) Execute() error {
 }
 
 func makeDir(dir string) error {
-
 	fi, err := os.Stat(dir)
 	if err != nil {
 		err = os.Mkdir(dir, os.ModePerm)
@@ -82,7 +78,6 @@ func makeDir(dir string) error {
 }
 
 func ExampleHelloWorld(c *cairo.Canvas) {
-
 	c.SelectFontFace("serif", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
 	c.SetFontSize(32.0)
 	c.SetSourceRGB(0.0, 0.0, 0.7)
@@ -172,10 +167,7 @@ func ExampleClipImage(c *cairo.Canvas) {
 	c.NewPath() // path not consumed by clip()
 
 	image, err := cairo.NewSurfaceFromPNG(textureDefiance1)
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
+	checkError(err)
 	defer image.Destroy()
 
 	w := float64(image.GetWidth())
@@ -420,10 +412,7 @@ func ExampleFillStyle(c *cairo.Canvas) {
 func ExampleImage(c *cairo.Canvas) {
 
 	image, err := cairo.NewSurfaceFromPNG(textureDefiance2)
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
+	checkError(err)
 	defer image.Destroy()
 
 	w := float64(image.GetWidth())
@@ -441,10 +430,7 @@ func ExampleImage(c *cairo.Canvas) {
 func ExampleImagePattern(c *cairo.Canvas) {
 
 	image, err := cairo.NewSurfaceFromPNG(textureCircleBlue)
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
+	checkError(err)
 	defer image.Destroy()
 
 	w := float64(image.GetWidth())
@@ -629,14 +615,12 @@ func ExampleTextExtents(c *cairo.Canvas) {
 func main() {
 
 	var (
-		size = Size{256, 256}
+		size = image.Point{X: 256, Y: 256}
 		dir  = "result"
 	)
 
-	if err := makeDir(dir); err != nil {
-		fmt.Println(err.Error())
-		return
-	}
+	err := makeDir(dir)
+	checkError(err)
 
 	es := []Example{
 		Example{ExampleHelloWorld, dir, "example-hello-world.png", size},
@@ -663,9 +647,12 @@ func main() {
 	}
 
 	for _, e := range es {
-		if err := e.Execute(); err != nil {
-			fmt.Println(err.Error())
-			return
-		}
+		checkError(e.Execute())
+	}
+}
+
+func checkError(err error) {
+	if err != nil {
+		log.Fatal(err)
 	}
 }

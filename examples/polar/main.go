@@ -9,38 +9,9 @@ import (
 	"path/filepath"
 
 	"github.com/gitchander/cairo"
+	"github.com/gitchander/cairo/examples/pointf"
 	"github.com/gitchander/cairo/imutil"
 )
-
-type Decart struct {
-	X, Y float64
-}
-
-func (a Decart) Scale(s float64) Decart {
-	return Decart{a.X * s, a.Y * s}
-}
-
-func (a Decart) Add(b Decart) Decart {
-	return Decart{a.X + b.X, a.Y + b.Y}
-}
-
-func (a Decart) Sub(b Decart) Decart {
-	return Decart{a.X - b.X, a.Y - b.Y}
-}
-
-type Polar struct {
-	R, Phi float64
-}
-
-func PolarToDecart(polar Polar) Decart {
-
-	sinPhi, cosPhi := math.Sincos(polar.Phi)
-
-	x := polar.R * cosPhi
-	y := polar.R * sinPhi
-
-	return Decart{x, y}
-}
 
 type Range struct {
 	Min   float64
@@ -252,7 +223,7 @@ func DrawAxes(canvas *cairo.Canvas) {
 
 func PolarDraw(canvas *cairo.Canvas, width, height int, params PolarCurve) {
 
-	var center = Decart{
+	var center = pointf.Point2f{
 		X: float64(width) * 0.5,
 		Y: float64(height) * 0.5,
 	}
@@ -261,13 +232,13 @@ func PolarDraw(canvas *cairo.Canvas, width, height int, params PolarCurve) {
 
 		angleStep := r.Step()
 		n := r.Count
-		p := Polar{Phi: r.Min}
+		angle := r.Min
 
 		for i := 0; i < n; i++ {
 
-			p.R = params.Curve.RadiusByAngle(p.Phi)
-			d := PolarToDecart(p)
-			p.Phi += angleStep
+			radius := params.Curve.RadiusByAngle(angle)
+			d := pointf.PolarToDecart(radius, angle)
+			angle += angleStep
 
 			temp := center.Add(d)
 

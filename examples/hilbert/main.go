@@ -37,13 +37,10 @@ func HilbertCurve(c *cairo.Canvas, n int, size image.Point) error {
 	m.Translate(0.5, 0.5)
 
 	if nn := s.N * s.N; nn > 0 {
-
 		x, y, _ := s.Map(0)
 		fX, fY := m.TransformPoint(float64(x), float64(y))
 		c.MoveTo(fX, fY)
-
 		for i := 1; i < nn; i++ {
-
 			x, y, _ = s.Map(i)
 			fX, fY = m.TransformPoint(float64(x), float64(y))
 			c.LineTo(fX, fY)
@@ -56,13 +53,8 @@ func HilbertCurve(c *cairo.Canvas, n int, size image.Point) error {
 }
 
 func drawCurve(c *cairo.Canvas, n int, size image.Point) error {
-
 	c.SetSourceRGB(0, 0, 0)
-	if err := HilbertCurve(c, n, size); err != nil {
-		return err
-	}
-
-	return nil
+	return HilbertCurve(c, n, size)
 }
 
 func drawDoubleCurve(c *cairo.Canvas, n int, size image.Point) error {
