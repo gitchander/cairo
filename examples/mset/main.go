@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/gitchander/cairo"
-	cairo_color "github.com/gitchander/cairo/color"
+	"github.com/gitchander/cairo/colorf"
 )
 
 func main() {
@@ -28,7 +28,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	renderMSet(bs, width, height, stride, cairo_color.NewRGB(0, 0, 0))
+	renderMSet(bs, width, height, stride, colorf.RGB{})
 
 	if err = surface.SetData(bs); err != nil {
 		log.Fatal(err)
@@ -39,17 +39,17 @@ func main() {
 	}
 }
 
-func renderMSet(bs []byte, width, height, stride int, c cairo_color.RGB) {
+func renderMSet(bs []byte, width, height, stride int, c colorf.RGB) {
 
 	var (
 		dx = 4.0 / float64(width)
 		dy = 4.0 / float64(height)
 	)
 
-	var clBackground, clForeground, clResult cairo_color.RGBA
+	var clBackground, clForeground, clResult colorf.RGBA
 	cR, cG, cB := c.GetRGB()
 
-	coder := cairo_color.NewCoderBGRA32()
+	coder := colorf.NewCoderBGRA32()
 
 	n := 200
 
@@ -60,11 +60,16 @@ func renderMSet(bs []byte, width, height, stride int, c cairo_color.RGB) {
 
 			cA := calcAlphaSubpixel3x3(x, y, dx, dy, n)
 
-			clForeground = cairo_color.NewRGBA(cR, cG, cB, cA)
+			clForeground = colorf.RGBA{
+				R: cR,
+				G: cG,
+				B: cB,
+				A: cA,
+			}
 
 			i := pX * 4
 			clBackground, _ = coder.Decode(bs[i:])
-			clResult = cairo_color.Over(clForeground, clBackground)
+			clResult = clForeground.Over(clBackground)
 			coder.Encode(bs[i:], clResult)
 
 			x += dx
