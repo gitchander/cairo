@@ -13,12 +13,7 @@ import (
 	"github.com/gitchander/cairo/imutil"
 )
 
-const (
-	textureDefiance1     = "images/defiance1.png"
-	textureDefiance2     = "images/defiance2.png"
-	textureChippedBricks = "images/chipped-bricks.png"
-	textureCircleBlue    = "images/circle-blue.png"
-)
+const textureFile = "data/romedalen.png"
 
 func DegToRad(deg float64) float64 {
 	return deg * (math.Pi / 180.0)
@@ -78,11 +73,11 @@ func makeDir(dir string) error {
 }
 
 func ExampleHelloWorld(c *cairo.Canvas) {
-	c.SelectFontFace("serif", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+	c.SelectFontFace("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
 	c.SetFontSize(32.0)
-	c.SetSourceRGB(0.0, 0.0, 0.7)
-	c.MoveTo(20.0, 140.0)
-	c.ShowText("Hello World")
+	c.SetSourceRGB(0.0, 0.0, 0.0)
+	c.MoveTo(10.0, 140.0)
+	c.ShowText("Hello, World!")
 }
 
 func ExampleArc(c *cairo.Canvas) {
@@ -166,7 +161,7 @@ func ExampleClipImage(c *cairo.Canvas) {
 	c.Clip()
 	c.NewPath() // path not consumed by clip()
 
-	image, err := cairo.NewSurfaceFromPNG(textureDefiance1)
+	image, err := cairo.NewSurfaceFromPNG(textureFile)
 	checkError(err)
 	defer image.Destroy()
 
@@ -411,7 +406,7 @@ func ExampleFillStyle(c *cairo.Canvas) {
 
 func ExampleImage(c *cairo.Canvas) {
 
-	image, err := cairo.NewSurfaceFromPNG(textureDefiance2)
+	image, err := cairo.NewSurfaceFromPNG(textureFile)
 	checkError(err)
 	defer image.Destroy()
 
@@ -429,7 +424,7 @@ func ExampleImage(c *cairo.Canvas) {
 
 func ExampleImagePattern(c *cairo.Canvas) {
 
-	image, err := cairo.NewSurfaceFromPNG(textureCircleBlue)
+	image, err := cairo.NewSurfaceFromPNG(textureFile)
 	checkError(err)
 	defer image.Destroy()
 
@@ -623,27 +618,27 @@ func main() {
 	checkError(err)
 
 	es := []Example{
-		Example{ExampleHelloWorld, dir, "example-hello-world.png", size},
-		Example{ExampleArc, dir, "example-arc.png", size},
-		Example{ExampleArcNegative, dir, "example-arc-negative.png", size},
-		Example{ExampleClip, dir, "example-clip.png", size},
-		Example{ExampleClipImage, dir, "example-clip-image.png", size},
-		Example{ExampleCurveRectangle, dir, "example-curve-rectangle.png", size},
-		Example{ExampleCurveTo, dir, "example-curve-to.png", size},
-		Example{ExampleGradient, dir, "example-gradient.png", size},
-		Example{ExampleSetLineJoin, dir, "example-set-line-join.png", size},
-		Example{ExampleDonut, dir, "example-donut.png", size},
-		Example{ExampleDash, dir, "example-dash.png", size},
-		Example{ExampleFillAndStroke2, dir, "example-fill-and-stroke2.png", size},
-		Example{ExampleFillStyle, dir, "example-fill-style.png", size},
-		Example{ExampleImage, dir, "example-image.png", size},
-		Example{ExampleImagePattern, dir, "example-image-pattern.png", size},
-		Example{ExampleMultiSegmentCaps, dir, "example-multi-segment-caps.png", size},
-		Example{ExampleRoundedRectangle, dir, "example-rounded-rectangle.png", size},
-		Example{ExampleSetLineCap, dir, "example-set-line-cap.png", size},
-		Example{ExampleText, dir, "example-text.png", size},
-		Example{ExampleTextAlignCenter, dir, "example-text-align-center.png", size},
-		Example{ExampleTextExtents, dir, "example-text-extents.png", size},
+		Example{ExampleHelloWorld, dir, "hello-world.png", size},
+		Example{ExampleArc, dir, "arc.png", size},
+		Example{ExampleArcNegative, dir, "arc-negative.png", size},
+		Example{ExampleClip, dir, "clip.png", size},
+		Example{ExampleClipImage, dir, "clip-image.png", size},
+		Example{ExampleCurveRectangle, dir, "curve-rectangle.png", size},
+		Example{ExampleCurveTo, dir, "curve-to.png", size},
+		Example{ExampleGradient, dir, "gradient.png", size},
+		Example{ExampleSetLineJoin, dir, "set-line-join.png", size},
+		Example{ExampleDonut, dir, "donut.png", size},
+		Example{ExampleDash, dir, "dash.png", size},
+		Example{ExampleFillAndStroke2, dir, "fill-and-stroke2.png", size},
+		Example{ExampleFillStyle, dir, "fill-style.png", size},
+		Example{ExampleImage, dir, "image.png", size},
+		Example{ExampleImagePattern, dir, "image-pattern.png", size},
+		Example{ExampleMultiSegmentCaps, dir, "multi-segment-caps.png", size},
+		Example{ExampleRoundedRectangle, dir, "rounded-rectangle.png", size},
+		Example{ExampleSetLineCap, dir, "set-line-cap.png", size},
+		Example{ExampleText, dir, "text.png", size},
+		Example{ExampleTextAlignCenter, dir, "text-align-center.png", size},
+		Example{ExampleTextExtents, dir, "text-extents.png", size},
 	}
 
 	for _, e := range es {

@@ -1,6 +1,6 @@
 package main
 
-// Z= Z ^ 2 + C
+// Z[n] = Z[n-1] ^ 2 + C
 func MandelbrotSet(x, y float64, n int) int {
 
 	var xx, yy, xy float64
@@ -22,7 +22,7 @@ func MandelbrotSet(x, y float64, n int) int {
 		x = xx - yy + Cx
 	}
 
-	return n
+	return -1
 }
 
 func JuliaSet(x, y float64, Cx, Cy float64, n int) int {
@@ -43,10 +43,10 @@ func JuliaSet(x, y float64, Cx, Cy float64, n int) int {
 		x = xx - yy + Cx
 	}
 
-	return n
+	return -1
 }
 
-// Z= Z ^ 3 + C
+// Z[n] = Z[n-1] ^ 3 + C
 func MandelbrotSetPow3(x, y float64, n int) int {
 
 	var xx, yy float64
@@ -67,5 +67,5 @@ func MandelbrotSetPow3(x, y float64, n int) int {
 		y = y*(3.0*xx-yy) + Cy
 	}
 
-	return n
+	return -1
 }

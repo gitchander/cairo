@@ -24,7 +24,7 @@ var palette2 = []color.Color{
 }
 
 func ColorIndex(i int) color.Color {
-	pal := palette1
+	pal := palette2
 	return pal[mod(i, len(pal))]
 }
 

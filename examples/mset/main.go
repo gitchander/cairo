@@ -97,7 +97,7 @@ func calcAlphaSubpixel3x3(x0, y0 float64, dx, dy float64, n int) float64 {
 			y := y0 + dy*shift[iY]
 
 			i := MandelbrotSet(x, y, n)
-			if i >= n {
+			if i == -1 {
 				count++
 			}
 		}
@@ -128,7 +128,7 @@ func calcAlphaSubpixel4x4(x0, y0 float64, dx, dy float64, n int) float64 {
 			y := y0 + dy*shift[iY]
 
 			i := MandelbrotSet(x, y, n)
-			if i >= n {
+			if i == -1 {
 				count++
 			}
 		}
