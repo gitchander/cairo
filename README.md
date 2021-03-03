@@ -7,7 +7,7 @@ cairo binding for golang
 
 ### Install Cairo
 ```shell
-$ sudo apt-get install libcairo2-dev
+$ sudo apt install libcairo2-dev
 ```
 
 ### Load this package
