@@ -42,7 +42,7 @@ func renderMSet(bs []byte, width, height, stride int, c color.Color) {
 		dy = 4.0 / float64(height)
 	)
 
-	cf := colorf.RGBModel.Convert(c).(colorf.RGB)
+	cf := colorf.NColorfModel.Convert(c).(colorf.NColorf)
 
 	coder := colorf.CoderBGRA32
 
@@ -55,7 +55,7 @@ func renderMSet(bs []byte, width, height, stride int, c color.Color) {
 
 			cA := calcAlphaSubpixel3x3(x, y, dx, dy, n)
 
-			clForeground := colorf.RGBA{
+			clForeground := colorf.NColorf{
 				R: cf.R,
 				G: cf.G,
 				B: cf.B,
@@ -66,9 +66,9 @@ func renderMSet(bs []byte, width, height, stride int, c color.Color) {
 			clBackground, err := coder.Decode(bs[i:])
 			checkError(err)
 
-			clBackgroundf := colorf.RGBAModel.Convert(clBackground).(colorf.RGBA)
+			clBackgroundf := colorf.NColorfModel.Convert(clBackground).(colorf.NColorf)
 
-			clResult := clForeground.Over(clBackgroundf)
+			clResult := colorf.ColorOver(clForeground, clBackgroundf)
 			coder.Encode(bs[i:], clResult)
 
 			x += dx

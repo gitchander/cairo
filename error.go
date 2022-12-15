@@ -5,15 +5,6 @@ import (
 	"fmt"
 )
 
-func newError(m string) error {
-	return errors.New(fmt.Sprintf("cairo: %s", m))
-}
-
-func NewErrorFromStatus(status Status) error {
-
-	if status != STATUS_SUCCESS {
-		return newError(StatusToString(status))
-	}
-
-	return nil
+func newCairoError(message string) error {
+	return errors.New(fmt.Sprintf("cairo: %s", message))
 }

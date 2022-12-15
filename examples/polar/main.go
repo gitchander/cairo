@@ -166,6 +166,7 @@ func DrawAxes(canvas *cairo.Canvas) {
 	m := 80
 	du := 2 * math.Pi / float64(m-1)
 
+	// draw circles
 	for i := 0; i < k; i++ {
 
 		u := float64(0)
@@ -190,16 +191,19 @@ func DrawAxes(canvas *cairo.Canvas) {
 	n := 16
 	du = 2 * math.Pi / float64(n)
 	u := float64(0)
+	k1 := 0
+	k2 := k
 
+	// draw rays
 	for i := 0; i < n; i++ {
 
 		s, c := math.Sincos(u)
 
-		r := rd * float64(1)
+		r := rd * float64(k1)
 		x1 := x0 + r*c
 		y1 := y0 + r*s
 
-		r = rd * float64(k)
+		r = rd * float64(k2)
 		x2 := x0 + r*c
 		y2 := y0 + r*s
 
@@ -210,7 +214,7 @@ func DrawAxes(canvas *cairo.Canvas) {
 	}
 
 	// render center cross
-	{
+	if false {
 		canvas.MoveTo(x0, y0-rd)
 		canvas.LineTo(x0, y0+rd)
 
@@ -237,7 +241,7 @@ func PolarDraw(canvas *cairo.Canvas, width, height int, params PolarCurve) {
 		for i := 0; i < n; i++ {
 
 			radius := params.Curve.RadiusByAngle(angle)
-			d := pointf.PolarToDecart(radius, angle)
+			d := pointf.Pt2f(pointf.PolarToCartesian(radius, angle))
 			angle += angleStep
 
 			temp := center.Add(d)

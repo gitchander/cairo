@@ -8,18 +8,7 @@ import (
 
 const textureFile = "data/romedalen.png"
 
-func ExampleHelloWorld(c *cairo.Canvas) error {
-
-	c.SelectFontFace("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
-	c.SetFontSize(32.0)
-	c.SetSourceRGB(0.0, 0.0, 0.0)
-	c.MoveTo(10.0, 140.0)
-	c.ShowText("Hello, World!")
-
-	return nil
-}
-
-func ExampleArc(c *cairo.Canvas) error {
+func sampleArc(c *cairo.Canvas) error {
 
 	var (
 		xc     float64 = 128.0
@@ -50,7 +39,7 @@ func ExampleArc(c *cairo.Canvas) error {
 	return nil
 }
 
-func ExampleArcNegative(c *cairo.Canvas) error {
+func sampleArcNegative(c *cairo.Canvas) error {
 
 	var (
 		xc     float64 = 128.0
@@ -81,7 +70,7 @@ func ExampleArcNegative(c *cairo.Canvas) error {
 	return nil
 }
 
-func ExampleClip(c *cairo.Canvas) error {
+func sampleClip(c *cairo.Canvas) error {
 
 	c.Arc(128.0, 128.0, 76.8, 0, 2*math.Pi)
 	c.Clip()
@@ -100,7 +89,7 @@ func ExampleClip(c *cairo.Canvas) error {
 	return nil
 }
 
-func ExampleClipImage(c *cairo.Canvas) error {
+func sampleClipImage(c *cairo.Canvas) error {
 
 	c.Arc(128.0, 128.0, 76.8, 0, 2*math.Pi)
 	c.Clip()
@@ -123,7 +112,7 @@ func ExampleClipImage(c *cairo.Canvas) error {
 	return nil
 }
 
-func ExampleCurveRectangle(c *cairo.Canvas) error {
+func sampleCurveRectangle(c *cairo.Canvas) error {
 
 	// a custom shape that could be wrapped in a function
 	var (
@@ -185,7 +174,7 @@ func ExampleCurveRectangle(c *cairo.Canvas) error {
 	return nil
 }
 
-func ExampleCurveTo(c *cairo.Canvas) error {
+func sampleCurveTo(c *cairo.Canvas) error {
 
 	var (
 		x, y   float64 = 25.6, 128.0
@@ -211,11 +200,14 @@ func ExampleCurveTo(c *cairo.Canvas) error {
 	return nil
 }
 
-func ExampleGradient(c *cairo.Canvas) error {
+func sampleGradient(c *cairo.Canvas) error {
 
 	// draw background
 	{
-		p, _ := cairo.NewPatternLinear(0.0, 0.0, 0.0, 256.0)
+		p, err := cairo.NewPatternLinear(0.0, 0.0, 0.0, 256.0)
+		if err != nil {
+			return err
+		}
 		p.AddColorStopRGBA(1, 0, 0, 0, 1)
 		p.AddColorStopRGBA(0, 1, 1, 1, 1)
 		c.Rectangle(0, 0, 256, 256)
@@ -243,7 +235,7 @@ func ExampleGradient(c *cairo.Canvas) error {
 	return nil
 }
 
-func ExampleSetLineJoin(c *cairo.Canvas) error {
+func sampleSetLineJoin(c *cairo.Canvas) error {
 
 	c.SetLineWidth(40.96)
 	c.MoveTo(76.8, 84.48)
@@ -267,28 +259,7 @@ func ExampleSetLineJoin(c *cairo.Canvas) error {
 	return nil
 }
 
-func ExampleDonut(c *cairo.Canvas) error {
-
-	var w, h float64 = 256, 256
-
-	c.SetLineWidth(0.5)
-	c.Translate(w/2, h/2)
-	c.Arc(0, 0, 120, 0, 2*math.Pi)
-	c.Stroke()
-
-	for i := 0; i < 36; i++ {
-		c.Save()
-		c.Rotate(float64(i) * math.Pi / 36)
-		c.Scale(0.3, 1)
-		c.Arc(0, 0, 120, 0, 2*math.Pi)
-		c.Restore()
-		c.Stroke()
-	}
-
-	return nil
-}
-
-func ExampleDash(c *cairo.Canvas) error {
+func sampleDash(c *cairo.Canvas) error {
 
 	var (
 		dashes = []float64{
@@ -314,7 +285,7 @@ func ExampleDash(c *cairo.Canvas) error {
 	return nil
 }
 
-func ExampleFillAndStroke2(c *cairo.Canvas) error {
+func sampleFillAndStroke2(c *cairo.Canvas) error {
 
 	c.MoveTo(128.0, 25.6)
 	c.LineTo(230.4, 230.4)
@@ -337,7 +308,7 @@ func ExampleFillAndStroke2(c *cairo.Canvas) error {
 	return nil
 }
 
-func ExampleFillStyle(c *cairo.Canvas) error {
+func sampleFillStyle(c *cairo.Canvas) error {
 
 	c.SetLineWidth(6)
 
@@ -369,7 +340,7 @@ func ExampleFillStyle(c *cairo.Canvas) error {
 	return nil
 }
 
-func ExampleImage(c *cairo.Canvas) error {
+func sampleImage(c *cairo.Canvas) error {
 
 	image, err := cairo.NewSurfaceFromPNG(textureFile)
 	if err != nil {
@@ -391,7 +362,7 @@ func ExampleImage(c *cairo.Canvas) error {
 	return nil
 }
 
-func ExampleImagePattern(c *cairo.Canvas) error {
+func sampleImagePattern(c *cairo.Canvas) error {
 
 	image, err := cairo.NewSurfaceFromPNG(textureFile)
 	if err != nil {
@@ -425,7 +396,7 @@ func ExampleImagePattern(c *cairo.Canvas) error {
 	return nil
 }
 
-func ExampleMultiSegmentCaps(c *cairo.Canvas) error {
+func sampleMultiSegmentCaps(c *cairo.Canvas) error {
 
 	c.MoveTo(50.0, 75.0)
 	c.LineTo(200.0, 75.0)
@@ -443,7 +414,7 @@ func ExampleMultiSegmentCaps(c *cairo.Canvas) error {
 	return nil
 }
 
-func ExampleRoundedRectangle(c *cairo.Canvas) error {
+func sampleRoundedRectangle(c *cairo.Canvas) error {
 
 	// a custom shape that could be wrapped in a function
 	var (
@@ -473,7 +444,7 @@ func ExampleRoundedRectangle(c *cairo.Canvas) error {
 	return nil
 }
 
-func ExampleSetLineCap(c *cairo.Canvas) error {
+func sampleSetLineCap(c *cairo.Canvas) error {
 
 	c.SetLineWidth(30.0)
 	c.SetLineCap(cairo.LINE_CAP_BUTT) // default
@@ -503,7 +474,7 @@ func ExampleSetLineCap(c *cairo.Canvas) error {
 	return nil
 }
 
-func ExampleText(c *cairo.Canvas) error {
+func sampleText(c *cairo.Canvas) error {
 
 	c.SelectFontFace("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
 	c.SetFontSize(90.0)
@@ -529,7 +500,7 @@ func ExampleText(c *cairo.Canvas) error {
 	return nil
 }
 
-func ExampleTextAlignCenter(c *cairo.Canvas) error {
+func sampleTextAlignCenter(c *cairo.Canvas) error {
 
 	var extents cairo.TextExtents
 
@@ -560,7 +531,7 @@ func ExampleTextAlignCenter(c *cairo.Canvas) error {
 	return nil
 }
 
-func ExampleTextExtents(c *cairo.Canvas) error {
+func sampleTextExtents(c *cairo.Canvas) error {
 
 	var extents cairo.TextExtents
 

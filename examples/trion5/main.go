@@ -25,24 +25,7 @@ type Point2f struct {
 	X, Y float64
 }
 
-func main() {
-
-	size := image.Point{X: 512, Y: 512}
-	surface, err := cairo.NewSurface(cairo.FORMAT_ARGB32, size.X, size.Y)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer surface.Destroy()
-
-	canvas, err := cairo.NewCanvas(surface)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer canvas.Destroy()
-
-	draw(canvas, size)
-
-	err = surface.WriteToPNG("trion5.png")
+func checkError(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -204,4 +187,21 @@ func minInt(x, y int) int {
 		return x
 	}
 	return y
+}
+
+func main() {
+
+	size := image.Point{X: 512, Y: 512}
+	surface, err := cairo.NewSurface(cairo.FORMAT_ARGB32, size.X, size.Y)
+	checkError(err)
+	defer surface.Destroy()
+
+	canvas, err := cairo.NewCanvas(surface)
+	checkError(err)
+	defer canvas.Destroy()
+
+	draw(canvas, size)
+
+	err = surface.WriteToPNG("trion5.png")
+	checkError(err)
 }

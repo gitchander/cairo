@@ -13,17 +13,17 @@ import (
 )
 
 type Surface struct {
-	surface_n *C.cairo_surface_t
+	surfaceNative *C.cairo_surface_t
 }
 
-func newSurface(surface_n *C.cairo_surface_t) (*Surface, error) {
+func newSurface(surfaceNative *C.cairo_surface_t) (*Surface, error) {
 
-	status := Status(C.cairo_surface_status(surface_n))
-	if status != STATUS_SUCCESS {
-		return nil, NewErrorFromStatus(status)
+	err := checkCairoStatus(C.cairo_surface_status(surfaceNative))
+	if err != nil {
+		return nil, err
 	}
 
-	s := &Surface{surface_n}
+	s := &Surface{surfaceNative}
 
 	runtime.SetFinalizer(s, (*Surface).destroy)
 
@@ -31,25 +31,25 @@ func newSurface(surface_n *C.cairo_surface_t) (*Surface, error) {
 }
 
 func (s *Surface) destroy() {
-	C.cairo_surface_destroy(s.surface_n)
+	C.cairo_surface_destroy(s.surfaceNative)
 }
 
 func (s *Surface) Destroy() {
 
-	if s.surface_n == nil {
+	if s.surfaceNative == nil {
 		return
 	}
 	s.destroy()
-	s.surface_n = nil
+	s.surfaceNative = nil
 
 	runtime.SetFinalizer(s, nil)
 }
 
 func NewSurface(format Format, width, height int) (*Surface, error) {
 
-	surface_n := C.cairo_image_surface_create(C.cairo_format_t(format), C.int(width), C.int(height))
+	surfaceNative := C.cairo_image_surface_create(C.cairo_format_t(format), C.int(width), C.int(height))
 
-	return newSurface(surface_n)
+	return newSurface(surfaceNative)
 }
 
 func NewSurfaceFromPNG(fileName string) (*Surface, error) {
@@ -57,37 +57,37 @@ func NewSurfaceFromPNG(fileName string) (*Surface, error) {
 	cstr := newCString(fileName)
 	defer freeCString(cstr)
 
-	surface_n := C.cairo_image_surface_create_from_png(cstr)
+	surfaceNative := C.cairo_image_surface_create_from_png(cstr)
 
-	return newSurface(surface_n)
+	return newSurface(surfaceNative)
 }
 
 func NewSurfaceNative(ptr uintptr) (*Surface, error) {
 
-	surface_n := (*C.cairo_surface_t)(unsafe.Pointer(ptr))
-	reference := C.cairo_surface_reference(surface_n)
+	surfaceNative := (*C.cairo_surface_t)(unsafe.Pointer(ptr))
+	reference := C.cairo_surface_reference(surfaceNative)
 
 	return newSurface(reference)
 }
 
 func CreateSurfaceForData(data []byte, format Format, width, height, stride int) (*Surface, error) {
-	surface_n := C.cairo_image_surface_create_for_data(
+	surfaceNative := C.cairo_image_surface_create_for_data(
 		(*C.uchar)(&data[0]),
 		C.cairo_format_t(format),
 		C.int(width),
 		C.int(height),
 		C.int(stride),
 	)
-	return newSurface(surface_n)
+	return newSurface(surfaceNative)
 }
 
 func (s *Surface) Native() uintptr {
-	return uintptr(unsafe.Pointer(s.surface_n))
+	return uintptr(unsafe.Pointer(s.surfaceNative))
 }
 
 func (s *Surface) Reference() *Surface {
 
-	reference := C.cairo_surface_reference(s.surface_n)
+	reference := C.cairo_surface_reference(s.surfaceNative)
 
 	sr, _ := newSurface(reference)
 
@@ -95,7 +95,7 @@ func (s *Surface) Reference() *Surface {
 }
 
 func (s *Surface) Finish() {
-	C.cairo_surface_finish(s.surface_n)
+	C.cairo_surface_finish(s.surfaceNative)
 }
 
 func (s *Surface) WriteToPNG(fileName string) error {
@@ -103,36 +103,36 @@ func (s *Surface) WriteToPNG(fileName string) error {
 	cstr := newCString(fileName)
 	defer freeCString(cstr)
 
-	status := Status(C.cairo_surface_write_to_png(s.surface_n, cstr))
-	if status != STATUS_SUCCESS {
-		return NewErrorFromStatus(status)
+	err := checkCairoStatus(C.cairo_surface_write_to_png(s.surfaceNative, cstr))
+	if err != nil {
+		return err
 	}
 
 	return nil
 }
 
 func (s *Surface) GetFormat() Format {
-	return Format(C.cairo_image_surface_get_format(s.surface_n))
+	return Format(C.cairo_image_surface_get_format(s.surfaceNative))
 }
 
 func (s *Surface) GetWidth() int {
-	return int(C.cairo_image_surface_get_width(s.surface_n))
+	return int(C.cairo_image_surface_get_width(s.surfaceNative))
 }
 
 func (s *Surface) GetHeight() int {
-	return int(C.cairo_image_surface_get_height(s.surface_n))
+	return int(C.cairo_image_surface_get_height(s.surfaceNative))
 }
 
 func (s *Surface) GetStride() int {
-	return int(C.cairo_image_surface_get_stride(s.surface_n))
+	return int(C.cairo_image_surface_get_stride(s.surfaceNative))
 }
 
 func (s *Surface) Flush() {
-	C.cairo_surface_flush(s.surface_n)
+	C.cairo_surface_flush(s.surfaceNative)
 }
 
 func (s *Surface) MarkDirty() {
-	C.cairo_surface_mark_dirty(s.surface_n)
+	C.cairo_surface_mark_dirty(s.surfaceNative)
 }
 
 func (s *Surface) GetDataLength() int {
@@ -147,12 +147,12 @@ func (s *Surface) GetData(data []byte) error {
 
 	dataLen := s.GetDataLength()
 	if len(data) != dataLen {
-		return newError("Surface.GetData(): invalid data size")
+		return newCairoError("Surface.GetData(): invalid data size")
 	}
 
-	dataPtr := unsafe.Pointer(C.cairo_image_surface_get_data(s.surface_n))
+	dataPtr := unsafe.Pointer(C.cairo_image_surface_get_data(s.surfaceNative))
 	if dataPtr == nil {
-		return newError("Surface.GetData(): can't access surface pixel data")
+		return newCairoError("Surface.GetData(): can't access surface pixel data")
 	}
 
 	C.memcpy(unsafe.Pointer(&data[0]), dataPtr, C.size_t(dataLen))
@@ -164,14 +164,14 @@ func (s *Surface) SetData(data []byte) error {
 
 	dataLen := s.GetDataLength()
 	if len(data) != dataLen {
-		return newError("Surface.SetData(): invalid data size")
+		return newCairoError("Surface.SetData(): invalid data size")
 	}
 
 	s.Flush()
 
-	dataPtr := unsafe.Pointer(C.cairo_image_surface_get_data(s.surface_n))
+	dataPtr := unsafe.Pointer(C.cairo_image_surface_get_data(s.surfaceNative))
 	if dataPtr == nil {
-		return newError("Surface.SetData(): can't access surface pixel data")
+		return newCairoError("Surface.SetData(): can't access surface pixel data")
 	}
 
 	C.memcpy(dataPtr, unsafe.Pointer(&data[0]), C.size_t(dataLen))

@@ -9,6 +9,13 @@ type Point2f struct {
 	X, Y float64
 }
 
+func Pt2f(x, y float64) Point2f {
+	return Point2f{
+		X: x,
+		Y: y,
+	}
+}
+
 func (a Point2f) Add(b Point2f) Point2f {
 	return Point2f{
 		X: a.X + b.X,
@@ -37,15 +44,44 @@ func (a Point2f) DivScalar(scalar float64) Point2f {
 	}
 }
 
-func (p Point2f) Negative() Point2f {
+// func (p Point2f) Negative() Point2f {
+// 	return Point2f{
+// 		X: -p.X,
+// 		Y: -p.Y,
+// 	}
+// }
+
+func (a Point2f) Invert() Point2f {
 	return Point2f{
-		X: -p.X,
-		Y: -p.Y,
+		X: -a.X,
+		Y: -a.Y,
+	}
+}
+
+func (a Point2f) InvertAxisX() Point2f {
+	return Point2f{
+		X: -a.X,
+		Y: a.Y,
+	}
+}
+
+func (a Point2f) InvertAxisY() Point2f {
+	return Point2f{
+		X: a.X,
+		Y: -a.Y,
 	}
 }
 
 func (p Point2f) String() string {
 	return fmt.Sprintf("(%.12f, %.12f)", p.X, p.Y)
+}
+
+// Point2f lerp
+func PtLerp(p0, p1 Point2f, t float64) Point2f {
+	return Point2f{
+		X: lerp(p0.X, p1.X, t),
+		Y: lerp(p0.Y, p1.Y, t),
+	}
 }
 
 func Distance(a, b Point2f) float64 {
@@ -54,9 +90,4 @@ func Distance(a, b Point2f) float64 {
 		dy = a.Y - b.Y
 	)
 	return math.Sqrt(dx*dx + dy*dy)
-}
-
-func PolarToDecart(radius, angle float64) Point2f {
-	sin, cos := math.Sincos(angle)
-	return Point2f{X: cos, Y: sin}.MulScalar(radius)
 }

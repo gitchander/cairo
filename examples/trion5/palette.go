@@ -37,6 +37,6 @@ func mod(a, b int) int {
 }
 
 func canvasSetColor(canvas *cairo.Canvas, cl color.Color) {
-	v := colorf.RGBModel.Convert(cl).(colorf.RGB)
-	canvas.SetSourceRGB(v.R, v.G, v.B)
+	v := colorf.NColorfModel.Convert(cl).(colorf.NColorf)
+	canvas.SetSourceRGBA(v.R, v.G, v.B, v.A)
 }

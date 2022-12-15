@@ -50,23 +50,19 @@ func (p *Cardioid) RadiusByAngle(Angle float64) float64 {
 
 type Lemniscate struct {
 	Named
-	a float64
+	radius float64
 }
 
-func NewLemniscate(name string, a float64) Curve {
+func NewLemniscate(name string, radius float64) Curve {
 	return &Lemniscate{
-		Named: Named{name},
-		a:     a,
+		Named:  Named{name},
+		radius: radius,
 	}
 }
 
-func (p *Lemniscate) RadiusByAngle(Angle float64) float64 {
-
-	c := math.Cos(2 * Angle)
-	if c < 0.0 {
-		return 0.0
-	}
-	return math.Sqrt(p.a * p.a * c)
+func (p *Lemniscate) RadiusByAngle(angle float64) float64 {
+	r, _ := lemniscate(p.radius, angle)
+	return r
 }
 
 type Cannabis struct {
@@ -82,7 +78,6 @@ func NewCannabis(name string, a float64) Curve {
 }
 
 func (p *Cannabis) RadiusByAngle(Angle float64) float64 {
-
 	return p.a * (1.0 + 9.0/10.0*math.Cos(8.0*Angle)) *
 		(1.0 + 1.0/10.0*math.Cos(24.0*Angle)) *
 		(9.0/10.0 + 1.0/10.0*math.Cos(200.0*Angle)) *

@@ -11,7 +11,7 @@ var (
 	White   = color.RGBA{R: 0xff, G: 0xff, B: 0xff, A: 0xff}
 	Black   = color.RGBA{R: 0x00, G: 0x00, B: 0x00, A: 0xff}
 	Red     = color.RGBA{R: 0xff, G: 0x00, B: 0x00, A: 0xff}
-	Green   = color.RGBA{R: 0x00, G: 0xff, B: 0x00, A: 0xff}
+	Green   = color.RGBA{R: 0x00, G: 0x80, B: 0x00, A: 0xff}
 	Blue    = color.RGBA{R: 0x00, G: 0x00, B: 0xff, A: 0xff}
 	Yellow  = color.RGBA{R: 0xff, G: 0xff, B: 0x00, A: 0xff}
 	Cyan    = color.RGBA{R: 0x00, G: 0xff, B: 0xff, A: 0xff}
@@ -36,10 +36,7 @@ func convertExample() {
 	}
 
 	for _, c := range cs {
-		var (
-			rgb  = colorf.RGBModel.Convert(c).(colorf.RGB)
-			rgba = colorf.RGBAModel.Convert(c).(colorf.RGBA)
-		)
-		fmt.Printf("color:%3v, rgb:%v, rgba:%v\n", c, rgb, rgba)
+		nc := colorf.NColorfModel.Convert(c).(colorf.NColorf)
+		fmt.Printf("color:%3v, rgb:%v\n", c, nc)
 	}
 }

@@ -39,9 +39,5 @@ func (e *Example) Execute() error {
 		return err
 	}
 
-	if err = surface.WriteToPNG(fileName); err != nil {
-		return err
-	}
-
-	return nil
+	return surface.WriteToPNG(fileName)
 }

@@ -22,13 +22,13 @@ func (coderBGRA32) Size() int {
 	return 4
 }
 
-func (coderBGRA32) Encode(bs []byte, c color.Color) error {
+func (cr coderBGRA32) Encode(bs []byte, c color.Color) error {
 
-	if len(bs) < CoderBGRA32.Size() {
+	if len(bs) < cr.Size() {
 		return errors.New("Insufficient data len")
 	}
 
-	v := color.RGBAModel.Convert(c).(color.RGBA)
+	v := color.NRGBAModel.Convert(c).(color.NRGBA)
 
 	bs[0] = v.B
 	bs[1] = v.G
@@ -38,16 +38,18 @@ func (coderBGRA32) Encode(bs []byte, c color.Color) error {
 	return nil
 }
 
-func (coderBGRA32) Decode(bs []byte) (color.Color, error) {
+func (cr coderBGRA32) Decode(bs []byte) (color.Color, error) {
 
-	if len(bs) < CoderBGRA32.Size() {
+	if len(bs) < cr.Size() {
 		return nil, errors.New("Insufficient data len")
 	}
 
-	return color.RGBA{
+	c := color.NRGBA{
 		B: bs[0],
 		G: bs[1],
 		R: bs[2],
 		A: bs[3],
-	}, nil
+	}
+
+	return c, nil
 }

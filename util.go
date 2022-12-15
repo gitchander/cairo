@@ -6,9 +6,7 @@ package cairo
 // #include <cairo-gobject.h>
 import "C"
 
-import (
-	"unsafe"
-)
+import "unsafe"
 
 func boolCairo(b bool) C.cairo_bool_t {
 	if b {

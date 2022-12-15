@@ -17,9 +17,9 @@ type Pattern struct {
 
 func newPattern(pattern_n *C.cairo_pattern_t) (*Pattern, error) {
 
-	status := Status(C.cairo_pattern_status(pattern_n))
-	if status != STATUS_SUCCESS {
-		return nil, NewErrorFromStatus(status)
+	err := checkCairoStatus(C.cairo_pattern_status(pattern_n))
+	if err != nil {
+		return nil, err
 	}
 
 	p := &Pattern{pattern_n}
@@ -62,7 +62,7 @@ func NewPatternRadial(cx0, cy0, radius0, cx1, cy1, radius1 float64) (*Pattern, e
 
 func NewPatternForSurface(s *Surface) (*Pattern, error) {
 
-	pattern_n := C.cairo_pattern_create_for_surface(s.surface_n)
+	pattern_n := C.cairo_pattern_create_for_surface(s.surfaceNative)
 
 	return newPattern(pattern_n)
 }
@@ -101,5 +101,5 @@ func (p *Pattern) SetExtend(extend Extend) {
 }
 
 func (p *Pattern) SetMatrix(m *Matrix) {
-	C.cairo_pattern_set_matrix(p.pattern_n, m.matrix_n)
+	C.cairo_pattern_set_matrix(p.pattern_n, m.matrixNative)
 }
