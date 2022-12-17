@@ -25,13 +25,24 @@ func run() error {
 	}
 	defer surface.Destroy()
 
-	if true {
-		c, err := cairo.NewCanvas(surface)
-		if err != nil {
-			return err
-		}
-		c.FillColor(colorf.MustParseColor("#f007"))
+	var bg, fg color.Color
+
+	//------------------------------------------------
+	// bg = colorf.MustParseColor("#0f07")
+	// fg = colorf.MustParseColor("#f007")
+
+	bg = color.NRGBA{G: 255, A: 227}
+	fg = colorf.NClrf(1.0, 0.0, 0.0, 0.6)
+
+	// bg = colorf.MustParseColor("#ffff")
+	// fg = colorf.MustParseColor("#000f")
+	//------------------------------------------------
+
+	c, err := cairo.NewCanvas(surface)
+	if err != nil {
+		return err
 	}
+	c.FillColor(bg)
 
 	var (
 		width  = surface.GetWidth()
@@ -46,10 +57,6 @@ func run() error {
 	if err != nil {
 		return err
 	}
-
-	var fg color.Color
-	//fg = color.Black
-	fg = colorf.NClrf(0, 0.5, 0, 0.8)
 
 	renderMSet(bs, width, height, stride, fg)
 
@@ -79,8 +86,13 @@ func renderMSet(bs []byte, width, height, stride int, c color.Color) error {
 		x := -2.0
 		for pX := 0; pX < width; pX++ {
 
-			factorA := calcAlphaSubpixel3x3(x, y, dx, dy, n)
+			i := pX * 4
+			clBackground, err := coder.Decode(bs[i:])
+			if err != nil {
+				return err
+			}
 
+			factorA := calcAlphaSubpixel3x3(x, y, dx, dy, n)
 			clForeground := colorf.NColorf{
 				R: cf.R,
 				G: cf.G,
@@ -88,15 +100,9 @@ func renderMSet(bs []byte, width, height, stride int, c color.Color) error {
 				A: cf.A * factorA,
 			}
 
-			i := pX * 4
-			clBackground, err := coder.Decode(bs[i:])
-			if err != nil {
-				return err
-			}
+			//clResult := colorf.ColorOver(clBackground, clForeground)
+			clResult := ColorOver(clBackground, clForeground)
 
-			clBackgroundf := colorf.NColorfModel.Convert(clBackground).(colorf.NColorf)
-
-			clResult := colorf.ColorOver(clForeground, clBackgroundf)
 			coder.Encode(bs[i:], clResult)
 
 			x += dx
@@ -122,11 +128,13 @@ func calcAlphaSubpixel3x3(x0, y0 float64, dx, dy float64, n int) float64 {
 	for iX := 0; iX < m; iX++ {
 		for iY := 0; iY < m; iY++ {
 
-			x := x0 + dx*shift[iX]
-			y := y0 + dy*shift[iY]
+			z := Complex{
+				Re: x0 + dx*shift[iX],
+				Im: y0 + dy*shift[iY],
+			}
 
-			i := MandelbrotSet(x, y, n)
-			if i == -1 {
+			_, ok := MandelbrotSet(z, n)
+			if ok {
 				count++
 			}
 		}
@@ -153,11 +161,13 @@ func calcAlphaSubpixel4x4(x0, y0 float64, dx, dy float64, n int) float64 {
 	for iX := 0; iX < m; iX++ {
 		for iY := 0; iY < m; iY++ {
 
-			x := x0 + dx*shift[iX]
-			y := y0 + dy*shift[iY]
+			z := Complex{
+				Re: x0 + dx*shift[iX],
+				Im: y0 + dy*shift[iY],
+			}
 
-			i := MandelbrotSet(x, y, n)
-			if i == -1 {
+			_, ok := MandelbrotSet(z, n)
+			if ok {
 				count++
 			}
 		}

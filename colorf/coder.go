@@ -11,6 +11,12 @@ type Coder interface {
 	Decode(bs []byte) (color.Color, error)
 }
 
+// cairo.FORMAT_ARGB32
+// each pixel is a 32-bit quantity, with alpha in the upper 8 bits,
+// then red, then green, then blue. The 32-bit quantities are stored
+// native-endian. Pre-multiplied alpha is used.
+// (That is, 50% transparent red is 0x80800000, not 0x80ff0000.)
+
 var CoderBGRA32 = coderBGRA32{}
 
 type coderBGRA32 struct{}
@@ -39,7 +45,7 @@ func (coderBGRA32) Encode(bs []byte, c color.Color) error {
 		return err
 	}
 
-	v := color.NRGBAModel.Convert(c).(color.NRGBA)
+	v := color.RGBAModel.Convert(c).(color.RGBA)
 
 	bs[0] = v.B
 	bs[1] = v.G
@@ -55,7 +61,7 @@ func (coderBGRA32) Decode(bs []byte) (color.Color, error) {
 		return nil, err
 	}
 
-	c := color.NRGBA{
+	c := color.RGBA{
 		B: bs[0],
 		G: bs[1],
 		R: bs[2],

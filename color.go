@@ -15,11 +15,13 @@ import (
 const maxColorComponent = 0xffff
 
 func (c *Canvas) SetSourceRGB(red, green, blue float64) {
-	C.cairo_set_source_rgb(c.cr, C.double(red), C.double(green), C.double(blue))
+	C.cairo_set_source_rgb(c.cr,
+		C.double(red), C.double(green), C.double(blue))
 }
 
 func (c *Canvas) SetSourceRGBA(red, green, blue, alpha float64) {
-	C.cairo_set_source_rgba(c.cr, C.double(red), C.double(green), C.double(blue), C.double(alpha))
+	C.cairo_set_source_rgba(c.cr,
+		C.double(red), C.double(green), C.double(blue), C.double(alpha))
 }
 
 func (c *Canvas) setSourceColor1(r color.Color) {
@@ -38,7 +40,9 @@ func (c *Canvas) setSourceColor1(r color.Color) {
 		A: float64(cu.A) / maxColorComponent,
 	}
 
-	if cu.A == maxColorComponent {
+	useRGB := (cu.A == maxColorComponent)
+
+	if useRGB {
 		c.SetSourceRGB(cf.R, cf.G, cf.B)
 	} else {
 		c.SetSourceRGBA(cf.R, cf.G, cf.B, cf.A)
@@ -50,7 +54,9 @@ func (c *Canvas) setSourceColor2(cr color.Color) {
 	cf := colorf.NColorfModel.Convert(cr).(colorf.NColorf)
 
 	_, _, _, a := cr.RGBA()
-	if a == maxColorComponent {
+	useRGB := (a == maxColorComponent)
+
+	if useRGB {
 		c.SetSourceRGB(cf.R, cf.G, cf.B)
 	} else {
 		c.SetSourceRGBA(cf.R, cf.G, cf.B, cf.A)
@@ -61,15 +67,17 @@ func (c *Canvas) setSourceColor3(cr color.Color) {
 
 	cf := colorf.NColorfModel.Convert(cr).(colorf.NColorf)
 
-	if cf.A == 1.0 {
+	useRGB := (cf.A == 1.0)
+
+	if useRGB {
 		c.SetSourceRGB(cf.R, cf.G, cf.B)
 	} else {
 		c.SetSourceRGBA(cf.R, cf.G, cf.B, cf.A)
 	}
 }
 
-func (c *Canvas) SetSourceColor(r color.Color) {
-	// c.setSourceColor1(r)
-	//c.setSourceColor2(r)
-	c.setSourceColor3(r)
+func (c *Canvas) SetSourceColor(cr color.Color) {
+	// c.setSourceColor1(cr)
+	c.setSourceColor2(cr)
+	//c.setSourceColor3(cr)
 }

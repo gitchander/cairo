@@ -26,7 +26,7 @@ func NClrf(r, g, b, a float64) NColorf {
 		G: g,
 		B: b,
 		A: a,
-	}
+	}.clamp()
 }
 
 func (c NColorf) clamp() NColorf {
@@ -128,14 +128,23 @@ func ncolorfModel(c color.Color) color.Color {
 var NColorfModel color.Model = color.ModelFunc(ncolorfModel)
 
 // ------------------------------------------------------------------------------
+func ColorOver(dc, sc color.Color) color.Color {
+	var (
+		dc1 = NColorfModel.Convert(dc).(NColorf)
+		sc1 = NColorfModel.Convert(sc).(NColorf)
+	)
+	return ncolorfOver(dc1, sc1)
+}
+
+// ------------------------------------------------------------------------------
 // Alpha blending
-// a over b
-func ColorOver(a, b NColorf) NColorf {
-	A := lerp(b.A, 1.0, a.A)
+// sc over dc
+func ncolorfOver(dc, sc NColorf) NColorf {
+	A := lerp(dc.A, 1.0, sc.A)
 	return NColorf{
-		R: lerp(b.R*b.A, a.R, a.A) / A,
-		G: lerp(b.G*b.A, a.G, a.A) / A,
-		B: lerp(b.B*b.A, a.B, a.A) / A,
+		R: lerp(dc.R*dc.A, sc.R, sc.A) / A,
+		G: lerp(dc.G*dc.A, sc.G, sc.A) / A,
+		B: lerp(dc.B*dc.A, sc.B, sc.A) / A,
 		A: A,
 	}
 }
