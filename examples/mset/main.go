@@ -9,10 +9,29 @@ import (
 )
 
 func main() {
+	checkError(run())
+}
 
+func checkError(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run() error {
 	surface, err := cairo.NewSurface(cairo.FORMAT_ARGB32, 512, 512)
-	checkError(err)
+	if err != nil {
+		return err
+	}
 	defer surface.Destroy()
+
+	if true {
+		c, err := cairo.NewCanvas(surface)
+		if err != nil {
+			return err
+		}
+		c.FillColor(colorf.MustParseColor("#f007"))
+	}
 
 	var (
 		width  = surface.GetWidth()
@@ -24,18 +43,25 @@ func main() {
 	bs := make([]byte, n)
 
 	err = surface.GetData(bs)
-	checkError(err)
+	if err != nil {
+		return err
+	}
 
-	renderMSet(bs, width, height, stride, color.Black)
+	var fg color.Color
+	//fg = color.Black
+	fg = colorf.NClrf(0, 0.5, 0, 0.8)
+
+	renderMSet(bs, width, height, stride, fg)
 
 	err = surface.SetData(bs)
-	checkError(err)
+	if err != nil {
+		return err
+	}
 
-	err = surface.WriteToPNG("fractal.png")
-	checkError(err)
+	return surface.WriteToPNG("fractal.png")
 }
 
-func renderMSet(bs []byte, width, height, stride int, c color.Color) {
+func renderMSet(bs []byte, width, height, stride int, c color.Color) error {
 
 	var (
 		dx = 4.0 / float64(width)
@@ -53,18 +79,20 @@ func renderMSet(bs []byte, width, height, stride int, c color.Color) {
 		x := -2.0
 		for pX := 0; pX < width; pX++ {
 
-			cA := calcAlphaSubpixel3x3(x, y, dx, dy, n)
+			factorA := calcAlphaSubpixel3x3(x, y, dx, dy, n)
 
 			clForeground := colorf.NColorf{
 				R: cf.R,
 				G: cf.G,
 				B: cf.B,
-				A: cA,
+				A: cf.A * factorA,
 			}
 
 			i := pX * 4
 			clBackground, err := coder.Decode(bs[i:])
-			checkError(err)
+			if err != nil {
+				return err
+			}
 
 			clBackgroundf := colorf.NColorfModel.Convert(clBackground).(colorf.NColorf)
 
@@ -76,6 +104,7 @@ func renderMSet(bs []byte, width, height, stride int, c color.Color) {
 		bs = bs[stride:]
 		y += dy
 	}
+	return nil
 }
 
 var subpixelShifts3x3 = []float64{
@@ -137,10 +166,4 @@ func calcAlphaSubpixel4x4(x0, y0 float64, dx, dy float64, n int) float64 {
 	alpha := float64(count) / float64(m*m)
 
 	return alpha
-}
-
-func checkError(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
 }

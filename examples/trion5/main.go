@@ -192,16 +192,16 @@ func minInt(x, y int) int {
 func main() {
 
 	size := image.Point{X: 512, Y: 512}
-	surface, err := cairo.NewSurface(cairo.FORMAT_ARGB32, size.X, size.Y)
+	s, err := cairo.NewSurface(cairo.FORMAT_ARGB32, size.X, size.Y)
 	checkError(err)
-	defer surface.Destroy()
+	defer s.Destroy()
 
-	canvas, err := cairo.NewCanvas(surface)
+	c, err := cairo.NewCanvas(s)
 	checkError(err)
-	defer canvas.Destroy()
+	defer c.Destroy()
 
-	draw(canvas, size)
+	draw(c, size)
 
-	err = surface.WriteToPNG("trion5.png")
+	err = s.WriteToPNG("trion5.png")
 	checkError(err)
 }

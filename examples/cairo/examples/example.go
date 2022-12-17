@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 
 	"github.com/gitchander/cairo"
-	"github.com/gitchander/cairo/imutil"
 )
 
 type Example struct {
@@ -26,15 +25,15 @@ func (e *Example) Execute() error {
 	}
 	defer surface.Destroy()
 
-	canvas, err := cairo.NewCanvas(surface)
+	c, err := cairo.NewCanvas(surface)
 	if err != nil {
 		return err
 	}
-	defer canvas.Destroy()
+	defer c.Destroy()
 
-	imutil.CanvasFillColor(canvas, color.White)
+	c.FillColor(color.White)
 
-	err = e.SampleFunc(canvas)
+	err = e.SampleFunc(c)
 	if err != nil {
 		return err
 	}

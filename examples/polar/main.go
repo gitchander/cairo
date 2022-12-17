@@ -10,7 +10,6 @@ import (
 
 	"github.com/gitchander/cairo"
 	"github.com/gitchander/cairo/examples/pointf"
-	"github.com/gitchander/cairo/imutil"
 )
 
 type Range struct {
@@ -123,21 +122,21 @@ func makeCurve(dir string, params PolarCurve) error {
 		return err
 	}
 
-	canvas, err := cairo.NewCanvas(surface)
+	c, err := cairo.NewCanvas(surface)
 	if err != nil {
 		return err
 	}
 
-	imutil.CanvasFillColor(canvas, color.White)
+	c.FillColor(color.White)
 
-	canvas.SetLineJoin(cairo.LINE_JOIN_ROUND)
-	canvas.SetLineWidth(1.0)
-	canvas.SetSourceRGB(0.7, 0.7, 0.7)
-	DrawAxes(canvas)
+	c.SetLineJoin(cairo.LINE_JOIN_ROUND)
+	c.SetLineWidth(1.0)
+	c.SetSourceRGB(0.7, 0.7, 0.7)
+	DrawAxes(c)
 
-	canvas.SetLineWidth(2)
-	canvas.SetSourceRGB(0.5, 0, 0)
-	PolarDraw(canvas, width, height, params)
+	c.SetLineWidth(2)
+	c.SetSourceRGB(0.5, 0, 0)
+	PolarDraw(c, width, height, params)
 
 	fileName := filepath.Join(dir, fmt.Sprintf("%s.png", params.Curve.Name()))
 

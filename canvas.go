@@ -7,11 +7,8 @@ package cairo
 import "C"
 
 import (
-	"image/color"
 	"runtime"
 	"unsafe"
-
-	"github.com/gitchander/cairo/colorf"
 )
 
 type Canvas struct {
@@ -58,6 +55,8 @@ func NewCanvasNative(ptr uintptr) (*Canvas, error) {
 
 	canvas_n := (*C.cairo_t)(unsafe.Pointer(ptr))
 	reference := C.cairo_reference(canvas_n)
+
+	//reference := C.cairo_reference((*C.cairo_t)(unsafe.Pointer(ptr)))
 
 	return newCanvas(reference)
 }
@@ -117,39 +116,6 @@ func (c *Canvas) GetGroupTarget() *Surface {
 		return nil
 	}
 	return &Surface{surfaceNative}
-}
-
-func (c *Canvas) SetSourceRGB(red, green, blue float64) {
-	C.cairo_set_source_rgb(c.cr, C.double(red), C.double(green), C.double(blue))
-}
-
-func (c *Canvas) SetSourceRGBA(red, green, blue, alpha float64) {
-	C.cairo_set_source_rgba(c.cr, C.double(red), C.double(green), C.double(blue), C.double(alpha))
-}
-
-func (c *Canvas) SetSourceColor(r color.Color) {
-
-	if cf, ok := r.(colorf.NColorf); ok {
-		c.SetSourceRGBA(cf.R, cf.G, cf.B, cf.A)
-		return
-	}
-
-	const maxColorComponent = 0xffff
-
-	cu := color.NRGBA64Model.Convert(r).(color.NRGBA64)
-
-	var (
-		fR = float64(cu.R) / maxColorComponent
-		fG = float64(cu.G) / maxColorComponent
-		fB = float64(cu.B) / maxColorComponent
-		fA = float64(cu.A) / maxColorComponent
-	)
-
-	if cu.A == maxColorComponent {
-		c.SetSourceRGB(fR, fG, fB)
-	} else {
-		c.SetSourceRGBA(fR, fG, fB, fA)
-	}
 }
 
 func (c *Canvas) SetSource(p *Pattern) {
@@ -383,7 +349,6 @@ func (c *Canvas) ArcNegative(xc, yc, radius, angle1, angle2 float64) {
 }
 
 func (c *Canvas) CurveTo(x1, y1, x2, y2, x3, y3 float64) {
-
 	C.cairo_curve_to(c.cr,
 		C.double(x1), C.double(y1),
 		C.double(x2), C.double(y2),

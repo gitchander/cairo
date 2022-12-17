@@ -103,12 +103,7 @@ func (s *Surface) WriteToPNG(fileName string) error {
 	cstr := newCString(fileName)
 	defer freeCString(cstr)
 
-	err := checkCairoStatus(C.cairo_surface_write_to_png(s.surfaceNative, cstr))
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return checkCairoStatus(C.cairo_surface_write_to_png(s.surfaceNative, cstr))
 }
 
 func (s *Surface) GetFormat() Format {

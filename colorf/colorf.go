@@ -1,6 +1,7 @@
 package colorf
 
 import (
+	"image"
 	"image/color"
 	"math"
 )
@@ -14,6 +15,20 @@ type NColorf struct {
 
 var _ color.Color = NColorf{}
 
+func _() {
+	image.Pt(0, 0)
+}
+
+// NClrf is shorthand for NColorf{R, G, B, A}.
+func NClrf(r, g, b, a float64) NColorf {
+	return NColorf{
+		R: r,
+		G: g,
+		B: b,
+		A: a,
+	}
+}
+
 func (c NColorf) clamp() NColorf {
 	return NColorf{
 		R: clamp01(c.R),
@@ -21,6 +36,12 @@ func (c NColorf) clamp() NColorf {
 		B: clamp01(c.B),
 		A: clamp01(c.A),
 	}
+}
+
+func (c NColorf) RGBA() (r, g, b, a uint32) {
+	// return c.v1_RGBA()
+	// return c.v2_RGBA()
+	return c.v3_RGBA()
 }
 
 func (c NColorf) v1_RGBA() (r, g, b, a uint32) {
@@ -67,26 +88,12 @@ func (c NColorf) v3_RGBA() (r, g, b, a uint32) {
 
 	// alpha-premultiple
 	{
-		r = uint32(r)
-		r *= uint32(a)
-		r /= maxColorComponent
-
-		g = uint32(g)
-		g *= uint32(a)
-		g /= maxColorComponent
-
-		b = uint32(b)
-		b *= uint32(a)
-		b /= maxColorComponent
+		r = (r * a) / maxColorComponent
+		g = (g * a) / maxColorComponent
+		b = (b * a) / maxColorComponent
 	}
 
 	return
-}
-
-func (c NColorf) RGBA() (r, g, b, a uint32) {
-	// return c.v1_RGBA()
-	// return c.v2_RGBA()
-	return c.v3_RGBA()
 }
 
 func colorComponentConvert(v float64) uint32 {

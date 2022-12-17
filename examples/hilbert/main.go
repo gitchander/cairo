@@ -12,7 +12,6 @@ import (
 	"github.com/google/hilbert"
 
 	"github.com/gitchander/cairo"
-	"github.com/gitchander/cairo/imutil"
 )
 
 func HilbertCurve(c *cairo.Canvas, n int, size image.Point) error {
@@ -74,34 +73,30 @@ func drawDoubleCurve(c *cairo.Canvas, n int, size image.Point) error {
 
 func makeHilbertPNG(fileName string, n int, size image.Point, double bool) error {
 
-	surface, err := cairo.NewSurface(cairo.FORMAT_ARGB32, size.X, size.Y)
+	s, err := cairo.NewSurface(cairo.FORMAT_ARGB32, size.X, size.Y)
 	if err != nil {
 		return err
 	}
-	defer surface.Destroy()
+	defer s.Destroy()
 
-	canvas, err := cairo.NewCanvas(surface)
+	c, err := cairo.NewCanvas(s)
 	if err != nil {
 		return err
 	}
-	defer canvas.Destroy()
+	defer c.Destroy()
 
-	imutil.CanvasFillColor(canvas, color.White)
+	c.FillColor(color.White)
 
 	if double {
-		err = drawDoubleCurve(canvas, n, size)
+		err = drawDoubleCurve(c, n, size)
 	} else {
-		err = drawCurve(canvas, n, size)
+		err = drawCurve(c, n, size)
 	}
 	if err != nil {
 		return err
 	}
 
-	if err = surface.WriteToPNG(fileName); err != nil {
-		return err
-	}
-
-	return nil
+	return s.WriteToPNG(fileName)
 }
 
 func makeDir(dir string) error {

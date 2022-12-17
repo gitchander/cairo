@@ -1,10 +1,6 @@
 package colorf
 
-// const (
-// 	maxUint8  = 0xff
-// 	maxUint16 = 0xffff
-// )
-
+// ------------------------------------------------------------------------------
 func clamp(a float64, min, max float64) float64 {
 	if a < min {
 		a = min

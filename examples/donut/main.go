@@ -8,7 +8,6 @@ import (
 
 	"github.com/gitchander/cairo"
 	. "github.com/gitchander/cairo/examples/pointf"
-	"github.com/gitchander/cairo/imutil"
 )
 
 const tau = 2.0 * math.Pi
@@ -34,15 +33,15 @@ func makeDonutImage() error {
 	}
 	defer surface.Destroy()
 
-	canvas, err := cairo.NewCanvas(surface)
+	c, err := cairo.NewCanvas(surface)
 	if err != nil {
 		return err
 	}
-	defer canvas.Destroy()
+	defer c.Destroy()
 
-	imutil.CanvasFillColor(canvas, color.White)
+	c.FillColor(color.White)
 
-	err = drawDonut(canvas, size)
+	err = drawDonut(c, size)
 	if err != nil {
 		return err
 	}

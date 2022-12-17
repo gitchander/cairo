@@ -1,7 +1,7 @@
 package colorf
 
 import (
-	"errors"
+	"fmt"
 	"image/color"
 )
 
@@ -22,10 +22,21 @@ func (coderBGRA32) Size() int {
 	return 4
 }
 
-func (cr coderBGRA32) Encode(bs []byte, c color.Color) error {
+func checkSizeBGRA32(bs []byte) error {
+	var (
+		haveSize = len(bs)
+		wantSize = coderBGRA32{}.Size()
+	)
+	if haveSize < wantSize {
+		return fmt.Errorf("Insufficient data length: have %d, want %d", haveSize, wantSize)
+	}
+	return nil
+}
 
-	if len(bs) < cr.Size() {
-		return errors.New("Insufficient data len")
+func (coderBGRA32) Encode(bs []byte, c color.Color) error {
+
+	if err := checkSizeBGRA32(bs); err != nil {
+		return err
 	}
 
 	v := color.NRGBAModel.Convert(c).(color.NRGBA)
@@ -38,10 +49,10 @@ func (cr coderBGRA32) Encode(bs []byte, c color.Color) error {
 	return nil
 }
 
-func (cr coderBGRA32) Decode(bs []byte) (color.Color, error) {
+func (coderBGRA32) Decode(bs []byte) (color.Color, error) {
 
-	if len(bs) < cr.Size() {
-		return nil, errors.New("Insufficient data len")
+	if err := checkSizeBGRA32(bs); err != nil {
+		return nil, err
 	}
 
 	c := color.NRGBA{
