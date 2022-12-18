@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/gitchander/cairo"
-	"github.com/gitchander/cairo/examples/pointf"
+	"github.com/gitchander/cairo/examples/mathf"
 )
 
 type Range struct {
@@ -226,7 +226,7 @@ func DrawAxes(canvas *cairo.Canvas) {
 
 func PolarDraw(canvas *cairo.Canvas, width, height int, params PolarCurve) {
 
-	var center = pointf.Point2f{
+	var center = mathf.Point2f{
 		X: float64(width) * 0.5,
 		Y: float64(height) * 0.5,
 	}
@@ -240,7 +240,7 @@ func PolarDraw(canvas *cairo.Canvas, width, height int, params PolarCurve) {
 		for i := 0; i < n; i++ {
 
 			radius := params.Curve.RadiusByAngle(angle)
-			d := pointf.Pt2f(pointf.PolarToCartesian(radius, angle))
+			d := mathf.Pt2f(mathf.PolarToCartesian(radius, angle))
 			angle += angleStep
 
 			temp := center.Add(d)

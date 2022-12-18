@@ -1,4 +1,4 @@
-package pointf
+package mathf
 
 import (
 	"fmt"
@@ -44,17 +44,10 @@ func (a Point2f) DivScalar(scalar float64) Point2f {
 	}
 }
 
-// func (p Point2f) Negative() Point2f {
-// 	return Point2f{
-// 		X: -p.X,
-// 		Y: -p.Y,
-// 	}
-// }
-
-func (a Point2f) Invert() Point2f {
+func (p Point2f) Negative() Point2f {
 	return Point2f{
-		X: -a.X,
-		Y: -a.Y,
+		X: -p.X,
+		Y: -p.Y,
 	}
 }
 

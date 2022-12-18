@@ -6,7 +6,7 @@ import (
 	"math"
 
 	"github.com/gitchander/cairo"
-	"github.com/gitchander/cairo/examples/pointf"
+	"github.com/gitchander/cairo/examples/mathf"
 )
 
 func main() {
@@ -76,11 +76,11 @@ func draw(canvas *cairo.Canvas, size image.Point) {
 	lines := []string{
 		"Hello,",
 		"World!",
-		"Привет,",
-		"Мир!",
+		"cairo is",
+		"the best!",
 	}
 
-	center := pointf.Point2f{
+	center := mathf.Point2f{
 		X: float64(size.X),
 		Y: float64(size.Y),
 	}.DivScalar(2)
@@ -101,7 +101,7 @@ func maxFloat64(a, b float64) float64 {
 	return b
 }
 
-func drawLines(c *cairo.Canvas, lines []string, center pointf.Point2f) {
+func drawLines(c *cairo.Canvas, lines []string, center mathf.Point2f) {
 
 	ts := make([]*cairo.TextExtents, len(lines))
 	for i, line := range lines {
@@ -110,7 +110,7 @@ func drawLines(c *cairo.Canvas, lines []string, center pointf.Point2f) {
 		ts[i] = t
 	}
 
-	var size pointf.Point2f
+	var size mathf.Point2f
 	var dY float64
 	for _, t := range ts {
 		size.X = maxFloat64(size.X, t.Width)
@@ -132,7 +132,7 @@ func drawLines(c *cairo.Canvas, lines []string, center pointf.Point2f) {
 	}
 }
 
-func drawPoint(c *cairo.Canvas, p pointf.Point2f) {
+func drawPoint(c *cairo.Canvas, p mathf.Point2f) {
 	radius := 3.0
 	c.Arc(p.X, p.Y, radius, 0, 2*math.Pi)
 	c.SetSourceRGB(1, 1, 1)

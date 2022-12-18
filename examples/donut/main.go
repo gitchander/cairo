@@ -7,7 +7,7 @@ import (
 	"math"
 
 	"github.com/gitchander/cairo"
-	. "github.com/gitchander/cairo/examples/pointf"
+	. "github.com/gitchander/cairo/examples/mathf"
 )
 
 const tau = 2.0 * math.Pi

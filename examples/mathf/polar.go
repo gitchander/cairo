@@ -1,4 +1,4 @@
-package pointf
+package mathf
 
 import (
 	"math"

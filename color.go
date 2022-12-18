@@ -24,6 +24,13 @@ func (c *Canvas) SetSourceRGBA(red, green, blue, alpha float64) {
 		C.double(red), C.double(green), C.double(blue), C.double(alpha))
 }
 
+//------------------------------------------------------------------------------
+func (c *Canvas) SetSourceColor(cr color.Color) {
+	// c.setSourceColor1(cr)
+	c.setSourceColor2(cr)
+	//c.setSourceColor3(cr)
+}
+
 func (c *Canvas) setSourceColor1(r color.Color) {
 
 	if cf, ok := r.(colorf.NColorf); ok {
@@ -74,10 +81,4 @@ func (c *Canvas) setSourceColor3(cr color.Color) {
 	} else {
 		c.SetSourceRGBA(cf.R, cf.G, cf.B, cf.A)
 	}
-}
-
-func (c *Canvas) SetSourceColor(cr color.Color) {
-	// c.setSourceColor1(cr)
-	c.setSourceColor2(cr)
-	//c.setSourceColor3(cr)
 }

@@ -1,4 +1,4 @@
-package pointf
+package mathf
 
 // Lerp - linear interpolation.
 // t: [0..1]

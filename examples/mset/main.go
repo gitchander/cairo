@@ -6,6 +6,7 @@ import (
 
 	"github.com/gitchander/cairo"
 	"github.com/gitchander/cairo/colorf"
+	. "github.com/gitchander/cairo/examples/mathf"
 )
 
 func main() {
@@ -92,7 +93,10 @@ func renderMSet(bs []byte, width, height, stride int, c color.Color) error {
 				return err
 			}
 
-			factorA := calcAlphaSubpixel3x3(x, y, dx, dy, n)
+			var (
+				// factorA = calcAlphaSubpixel3x3(x, y, dx, dy, n)
+				factorA = calcAlphaSubpixel4x4(x, y, dx, dy, n)
+			)
 			clForeground := colorf.NColorf{
 				R: cf.R,
 				G: cf.G,
@@ -100,8 +104,10 @@ func renderMSet(bs []byte, width, height, stride int, c color.Color) error {
 				A: cf.A * factorA,
 			}
 
-			//clResult := colorf.ColorOver(clBackground, clForeground)
-			clResult := ColorOver(clBackground, clForeground)
+			var (
+				// clResult = colorf.ColorOver1(clBackground, clForeground)
+				clResult = colorf.ColorOver2(clBackground, clForeground)
+			)
 
 			coder.Encode(bs[i:], clResult)
 
@@ -121,20 +127,19 @@ var subpixelShifts3x3 = []float64{
 
 func calcAlphaSubpixel3x3(x0, y0 float64, dx, dy float64, n int) float64 {
 
+	orbit := makeOrbitFunctor(n)
+
 	shift := subpixelShifts3x3
 	m := len(shift)
 
 	count := 0
 	for iX := 0; iX < m; iX++ {
 		for iY := 0; iY < m; iY++ {
-
 			z := Complex{
 				Re: x0 + dx*shift[iX],
 				Im: y0 + dy*shift[iY],
 			}
-
-			_, ok := MandelbrotSet(z, n)
-			if ok {
+			if orbit(z) {
 				count++
 			}
 		}
@@ -154,20 +159,19 @@ var subpixelShifts4x4 = []float64{
 
 func calcAlphaSubpixel4x4(x0, y0 float64, dx, dy float64, n int) float64 {
 
+	orbit := makeOrbitFunctor(n)
+
 	shift := subpixelShifts4x4
 	m := len(shift)
 
 	count := 0
 	for iX := 0; iX < m; iX++ {
 		for iY := 0; iY < m; iY++ {
-
 			z := Complex{
 				Re: x0 + dx*shift[iX],
 				Im: y0 + dy*shift[iY],
 			}
-
-			_, ok := MandelbrotSet(z, n)
-			if ok {
+			if orbit(z) {
 				count++
 			}
 		}
@@ -176,4 +180,41 @@ func calcAlphaSubpixel4x4(x0, y0 float64, dx, dy float64, n int) float64 {
 	alpha := float64(count) / float64(m*m)
 
 	return alpha
+}
+
+type OrbitFunctor func(z Complex) bool
+
+func makeOrbitFunctor(n int) OrbitFunctor {
+	switch 4 {
+	case 0:
+		return func(z Complex) bool {
+			_, ok := MandelbrotSet(z, n)
+			return ok
+		}
+	case 1:
+		return func(z Complex) bool {
+			_, ok := MandelbrotSetPow3(z, n)
+			return ok
+		}
+	case 2:
+		return func(z Complex) bool {
+			_, ok := MandelbrotSetPowM(z, 10, n)
+			return ok
+		}
+	case 3:
+		return func(z Complex) bool {
+			_, ok := MandelbrotSetPow(z, 2.5, n)
+			return ok
+		}
+	case 4:
+		c := Complex{Re: -0.7269, Im: 0.1889}
+		return func(z Complex) bool {
+			_, ok := JuliaSet(c, z, n)
+			return ok
+		}
+	default:
+		return func(z Complex) bool {
+			return false
+		}
+	}
 }
