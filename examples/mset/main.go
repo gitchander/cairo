@@ -33,7 +33,7 @@ func run() error {
 	// fg = colorf.MustParseColor("#f007")
 
 	bg = color.NRGBA{G: 255, A: 227}
-	fg = colorf.NClrf(1.0, 0.0, 0.0, 0.6)
+	fg = colorf.NRGBAf{R: 1.0, G: 0.0, B: 0.0, A: 0.6}
 
 	// bg = colorf.MustParseColor("#ffff")
 	// fg = colorf.MustParseColor("#000f")
@@ -76,11 +76,13 @@ func renderMSet(bs []byte, width, height, stride int, c color.Color) error {
 		dy = 4.0 / float64(height)
 	)
 
-	cf := colorf.NColorfModel.Convert(c).(colorf.NColorf)
+	cf := colorf.NRGBAfModel.Convert(c).(colorf.NRGBAf)
 
 	coder := colorf.CoderBGRA32
 
 	n := 200
+
+	orbit := makeOrbitFunctor(4, n)
 
 	y := -2.0
 	for pY := 0; pY < height; pY++ {
@@ -94,20 +96,17 @@ func renderMSet(bs []byte, width, height, stride int, c color.Color) error {
 			}
 
 			var (
-				// factorA = calcAlphaSubpixel3x3(x, y, dx, dy, n)
-				factorA = calcAlphaSubpixel4x4(x, y, dx, dy, n)
+				//factorA = calcAlphaSubpixel3x3(x, y, dx, dy, orbit)
+				factorA = calcAlphaSubpixel4x4(x, y, dx, dy, orbit)
 			)
-			clForeground := colorf.NColorf{
+			clForeground := colorf.NRGBAf{
 				R: cf.R,
 				G: cf.G,
 				B: cf.B,
 				A: cf.A * factorA,
 			}
 
-			var (
-				// clResult = colorf.ColorOver1(clBackground, clForeground)
-				clResult = colorf.ColorOver2(clBackground, clForeground)
-			)
+			clResult := colorf.ColorOver(clBackground, clForeground)
 
 			coder.Encode(bs[i:], clResult)
 
@@ -125,9 +124,7 @@ var subpixelShifts3x3 = []float64{
 	+1.0 / 3.0,
 }
 
-func calcAlphaSubpixel3x3(x0, y0 float64, dx, dy float64, n int) float64 {
-
-	orbit := makeOrbitFunctor(n)
+func calcAlphaSubpixel3x3(x0, y0 float64, dx, dy float64, orbit OrbitFunctor) float64 {
 
 	shift := subpixelShifts3x3
 	m := len(shift)
@@ -157,9 +154,7 @@ var subpixelShifts4x4 = []float64{
 	+3.0 / 8.0,
 }
 
-func calcAlphaSubpixel4x4(x0, y0 float64, dx, dy float64, n int) float64 {
-
-	orbit := makeOrbitFunctor(n)
+func calcAlphaSubpixel4x4(x0, y0 float64, dx, dy float64, orbit OrbitFunctor) float64 {
 
 	shift := subpixelShifts4x4
 	m := len(shift)
@@ -184,8 +179,8 @@ func calcAlphaSubpixel4x4(x0, y0 float64, dx, dy float64, n int) float64 {
 
 type OrbitFunctor func(z Complex) bool
 
-func makeOrbitFunctor(n int) OrbitFunctor {
-	switch 4 {
+func makeOrbitFunctor(k int, n int) OrbitFunctor {
+	switch k {
 	case 0:
 		return func(z Complex) bool {
 			_, ok := MandelbrotSet(z, n)

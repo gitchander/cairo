@@ -36,7 +36,7 @@ func convertExample() {
 	}
 
 	for _, c := range cs {
-		nc := colorf.NColorfModel.Convert(c).(colorf.NColorf)
+		nc := colorf.NRGBAfModel.Convert(c).(colorf.NRGBAf)
 		fmt.Printf("color:%3v, rgb:%v\n", c, nc)
 	}
 }

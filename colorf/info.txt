@@ -1,0 +1,12 @@
+Alpha Premultiplication
+https://www.teamten.com/lawrence/graphics/premultiplication/
+
+https://microsoft.github.io/Win2D/WinUI3/html/PremultipliedAlpha.htm
+
+
+Straight alpha
+result = (source.RGB * source.A) + (dest.RGB * (1 - source.A))
+
+
+Premultiplied alpha
+result = source.RGB + (dest.RGB * (1 - source.A))

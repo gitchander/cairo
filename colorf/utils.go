@@ -11,11 +11,6 @@ func clamp(a float64, min, max float64) float64 {
 	return a
 }
 
-// clamp color component
-func clamp01(a float64) float64 {
-	return clamp(a, 0, 1)
-}
-
 // ------------------------------------------------------------------------------
 // Lerp - Linear interpolation
 // t= [0, 1]
@@ -63,5 +58,3 @@ func decodeNibble(b byte) (byte, bool) {
 	}
 	return 0, false
 }
-
-// ------------------------------------------------------------------------------

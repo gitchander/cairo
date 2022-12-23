@@ -24,7 +24,7 @@ func (c *Canvas) SetSourceRGBA(red, green, blue, alpha float64) {
 		C.double(red), C.double(green), C.double(blue), C.double(alpha))
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 func (c *Canvas) SetSourceColor(cr color.Color) {
 	// c.setSourceColor1(cr)
 	c.setSourceColor2(cr)
@@ -33,14 +33,14 @@ func (c *Canvas) SetSourceColor(cr color.Color) {
 
 func (c *Canvas) setSourceColor1(r color.Color) {
 
-	if cf, ok := r.(colorf.NColorf); ok {
+	if cf, ok := r.(colorf.NRGBAf); ok {
 		c.SetSourceRGBA(cf.R, cf.G, cf.B, cf.A)
 		return
 	}
 
 	cu := color.NRGBA64Model.Convert(r).(color.NRGBA64)
 
-	cf := colorf.NColorf{
+	cf := colorf.NRGBAf{
 		R: float64(cu.R) / maxColorComponent,
 		G: float64(cu.G) / maxColorComponent,
 		B: float64(cu.B) / maxColorComponent,
@@ -58,7 +58,7 @@ func (c *Canvas) setSourceColor1(r color.Color) {
 
 func (c *Canvas) setSourceColor2(cr color.Color) {
 
-	cf := colorf.NColorfModel.Convert(cr).(colorf.NColorf)
+	cf := colorf.NRGBAfModel.Convert(cr).(colorf.NRGBAf)
 
 	_, _, _, a := cr.RGBA()
 	useRGB := (a == maxColorComponent)
@@ -72,7 +72,7 @@ func (c *Canvas) setSourceColor2(cr color.Color) {
 
 func (c *Canvas) setSourceColor3(cr color.Color) {
 
-	cf := colorf.NColorfModel.Convert(cr).(colorf.NColorf)
+	cf := colorf.NRGBAfModel.Convert(cr).(colorf.NRGBAf)
 
 	useRGB := (cf.A == 1.0)
 
